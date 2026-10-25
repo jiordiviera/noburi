@@ -170,3 +170,19 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Deliverables: each task's own summary, plus `git status --short` and `git diff --stat HEAD` of the workspace
   when it is a repository (read-only). Nothing is committed or merged.
 - Fixed along the way: a stop requested before a run had started was ignored by `runClaude`.
+
+## D14 — The pixel office
+
+- Drawn with plain DOM images (`apps/desktop/src/features/office/`), not PixiJS: three characters, three desks
+  and a static background do not need a WebGL scene, and DOM elements stay accessible (each nameplate is a
+  button with a text status) and themable. PixiJS can come back if the office gets walking, pathfinding or
+  many sprites.
+- Pixels stay crisp: art is 16 px, scaled by a whole number (`--nb-office-scale`, 2×/3×/4× in Settings) with
+  `image-rendering: pixelated`. Sprites and the scene are bundled by Vite from `assets/`.
+- `deriveOffice()` maps each agent to a sprite only from persisted mission data: _Working_ while a tool it
+  started has not finished, _Thinking_ while its task runs between tools, _Needs you_ only while an approval is
+  pending, then _Done_, _Failed_, _Interrupted_, _Up next_ or idle. Nothing animates once the mission is not
+  RUNNING. Covered by unit tests.
+- The only motion is a one-pixel bob while an agent is really working; it stops with "Reduce motion" in
+  Settings or the system preference.
+- Slots follow `assets/worlds/cozy-office/map.json`: Developer, Architect (reviewer sprite), Researcher.
