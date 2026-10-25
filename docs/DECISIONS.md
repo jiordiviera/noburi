@@ -214,5 +214,8 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   user's installed `claude` (`NOBURI_CLAUDE_BIN`, then PATH, then `~/.local/bin`, `~/.claude/local`,
   `/usr/local/bin`). The SDK version (0.3.310, CLI 2.1.310) and the installed CLI can differ; this is a known
   risk to watch.
+- Apps started from a desktop menu get a minimal PATH, so agents could not find `npm` or nvm's Node (seen in a
+  real packaged run). The packaged runtime reads the login shell's PATH once at start (`$SHELL -ilc`, 5 s
+  timeout, output between markers) and merges it in front of the launcher's; about 2 s on a zsh setup.
 - Data stays in `~/.local/share/noburi/` for both dev and packaged builds.
 - Not done: signing, update channel, macOS/Windows packages.

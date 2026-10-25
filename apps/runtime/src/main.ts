@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { findClaudeExecutable, runClaude, sdkSessionSource } from "@noburi/provider-claude";
 import { createApi } from "./api.ts";
+import { loginShellPath, mergePaths } from "./shellPath.ts";
 import { MissionService } from "./missions.ts";
 import { RunManager } from "./runs.ts";
 import { createRuntimeServer, listenLoopback } from "./server.ts";
@@ -18,6 +19,13 @@ const store = new Store(process.env.NOBURI_DB ?? defaultDatabasePath());
 store.reconcileAfterRestart();
 // Packaged builds do not ship the SDK's Claude binary: they run the user's installed Claude Code CLI.
 const packaged = process.env.NOBURI_PACKAGED === "1";
+if (packaged) {
+  // Launched from a desktop menu: give agents (and Claude detection) the user's real PATH.
+  const shellPath = await loginShellPath();
+  if (shellPath) process.env.PATH = mergePaths(shellPath, process.env.PATH ?? "");
+  else
+    process.stderr.write("Could not read the login shell PATH; agents get the launcher's PATH.\n");
+}
 const claudeExecutable = packaged || process.env.NOBURI_CLAUDE_BIN ? findClaudeExecutable() : null;
 if (packaged && !claudeExecutable) {
   process.stderr.write("Claude Code CLI not found: install it or set NOBURI_CLAUDE_BIN.\n");
