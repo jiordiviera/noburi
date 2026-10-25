@@ -1,4 +1,7 @@
 import { randomBytes } from "node:crypto";
+import { runClaude, sdkSessionSource } from "@noburi/provider-claude";
+import { createApi } from "./api.ts";
+import { RunManager } from "./runs.ts";
 import { createRuntimeServer, listenLoopback } from "./server.ts";
 
 const token = process.env.NOBURI_RUNTIME_TOKEN ?? randomBytes(32).toString("base64url");
@@ -8,7 +11,8 @@ const allowedOrigins = (
   "http://localhost:1420,tauri://localhost,http://tauri.localhost"
 ).split(",");
 
-const server = createRuntimeServer({ token, allowedOrigins });
+const api = createApi({ sessions: sdkSessionSource, runs: new RunManager(runClaude) });
+const server = createRuntimeServer({ token, allowedOrigins, api });
 const boundPort = await listenLoopback(server, port);
 
 // The desktop shell reads this line from stdout to connect; the token is never logged elsewhere.

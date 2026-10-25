@@ -93,3 +93,45 @@ Apache-2.0 (official text, SHA-256 `cfc7749b…d30`) with a `NOTICE` file. Chose
 grant from contributors and because section 6 states the licence gives no trademark rights, which keeps the
 Noburi name and logo out of the code licence as the spec asks. Third-party logos and fonts keep their own terms.
 The original pixel art is covered by Apache-2.0 for now; a separate asset licence (CC-BY-4.0) can be added later.
+
+## D10 — Existing Claude Code sessions
+
+- Discovery and reading use only `listSessions`, `getSessionInfo` and `getSessionMessages` from
+  `@anthropic-ai/claude-agent-sdk` 0.3.310; no hand-written JSONL parser. A test fails if the session source
+  ever imports a writing function (`deleteSession`, `renameSession`, `tagSession`, `forkSession`, …).
+- Sessions are grouped by the working directory Claude Code recorded. Missing folders are flagged, never
+  removed; sessions without a recorded folder go to "Unknown folder". The git root is found by walking up.
+- Transcripts are normalised for display (text, tool calls, tool results); thinking blocks are not shown. Pages
+  of 100 messages are read lazily, from the start of the conversation.
+- Continue = `query({ resume })`, Fork = `query({ resume, forkSession: true })`. The runtime takes the folder
+  from the session's own record, never from the client. It refuses to continue a session written to in the last
+  2 minutes (it may be open in a terminal) unless the user forks or explicitly forces it, and refuses a second
+  Noburi run on the same session.
+- Permissions: `permissionMode: "default"` plus `canUseTool`. Read-only tools (Read, Glob, Grep, LS,
+  NotebookRead, TodoWrite) run directly unless they touch a path outside the project; every other tool waits for
+  Approve / Deny in the UI. Nothing bypasses permissions. The user's own Claude Code allow rules still apply.
+- Runs are streamed to the UI as server-sent events read with `fetch` (EventSource cannot send the auth header),
+  buffered so a reconnecting UI replays them. "Stopped" is shown only after the SDK run has actually ended.
+- Usage comes from the SDK `result` message (input, output, cache read, cache write tokens). The SDK's
+  `total_cost_usd` is kept as an API-price estimate and is not presented as a bill.
+- `pnpm dev` (scripts/dev.mjs) starts the runtime, reads its ready line and passes URL and token to Vite as
+  `VITE_NOBURI_RUNTIME_*`. Tauri will do the same without env variables.
+- Consent: the first scan waits for the user to accept, and the screen states the folder that is read.
+- Not done yet: real end-to-end resume test against Claude on a real account, detecting a CLI process that holds
+  a session (only the 2-minute heuristic exists), and reading the newest messages first in very long sessions.
+
+## D11 — Theme presets
+
+- 15 themes in three groups: Noburi (Cozy Night, Cozy Day, Matcha, High contrast), inspired by developer
+  tools (Claude Dark/Light, Codex, GitHub Dark/Light, Vercel) and community classics (Dracula, Nord,
+  Catppuccin Mocha, Tokyo Night, Solarized Light).
+- A theme is a palette plus suggested fonts (interface, code, conversation). Picking one applies its fonts and
+  its own accent; the user can then change each font or force a fixed accent.
+- "Inspired by" themes reuse colour schemes only: no logos, and no proprietary fonts. Claude and OpenAI fonts
+  are not open, so Claude themes use Inter + Source Serif 4 (conversations) and Codex uses Inter + Fira Code.
+  GitHub themes use GitHub's own open fonts, Mona Sans and Monaspace Neon (OFL 1.1).
+- A conversation font (`readingFont`) was added: Claude themes read in serif, everything else follows the
+  interface font.
+- `packages/ui/src/themes.test.ts` computes WCAG contrast for every theme from `themes.css`: text, secondary
+  text, button text, error/success/warning/info text, and dark text on the fixed accents must reach 4.5:1. It
+  caught Solarized's button (4.08:1), now a darker blue with white text.

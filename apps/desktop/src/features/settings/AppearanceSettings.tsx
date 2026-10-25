@@ -1,4 +1,14 @@
-import { ACCENTS, FONT_SCALES, MONO_FONTS, THEMES, UI_FONTS, type Appearance } from "@noburi/ui";
+import {
+  ACCENTS,
+  FONT_SCALES,
+  MONO_FONTS,
+  READING_FONTS,
+  THEME_GROUPS,
+  THEMES,
+  themePreset,
+  UI_FONTS,
+  type Appearance,
+} from "@noburi/ui";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -16,27 +26,25 @@ import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 
-// Swatches preview each theme with its own literal colours, independent of the active theme.
-const THEME_PREVIEW: Record<Appearance["theme"], { bg: string; card: string; fg: string }> = {
-  "cozy-night": { bg: "#0c131a", card: "#16202a", fg: "#f6f0e5" },
-  "cozy-day": { bg: "#f6f0e5", card: "#fffdf8", fg: "#101820" },
-  matcha: { bg: "#0d1613", card: "#14201b", fg: "#f2f0e6" },
-  "high-contrast": { bg: "#000000", card: "#0b0b0b", fg: "#ffffff" },
-};
-const ACCENT_SWATCH: Record<Appearance["accent"], string> = {
+const ACCENT_SWATCH: Record<Exclude<Appearance["accent"], "theme">, string> = {
   honey: "#f0be79",
   mint: "#7dd3b0",
   sky: "#8ec5ff",
   coral: "#f2867a",
 };
 
+const fontLabel = (id: string, list: readonly { id: string; label: string }[]) =>
+  list.find((f) => f.id === id)?.label ?? id;
+
 interface Props {
   appearance: Appearance;
   update: (key: keyof Appearance, value: unknown) => void;
+  selectTheme: (id: unknown) => void;
   reset: () => void;
 }
 
-export function AppearanceSettings({ appearance, update, reset }: Props) {
+export function AppearanceSettings({ appearance, update, selectTheme, reset }: Props) {
+  const themeAccent = themePreset(appearance.theme).preview.accent;
   return (
     <div className="flex max-w-3xl flex-col gap-4">
       <Card>
@@ -49,38 +57,60 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
         <CardContent className="flex flex-col gap-6">
           <RadioGroup
             value={appearance.theme}
-            onValueChange={(v) => update("theme", v)}
-            className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+            onValueChange={selectTheme}
+            className="flex flex-col gap-5"
             aria-label="Theme"
           >
-            {THEMES.map((t) => {
-              const p = THEME_PREVIEW[t.id];
-              return (
-                <Label
-                  key={t.id}
-                  htmlFor={`theme-${t.id}`}
-                  className={cn(
-                    "flex cursor-pointer flex-col gap-2 rounded-lg border-2 p-2",
-                    appearance.theme === t.id
-                      ? "border-primary"
-                      : "border-transparent hover:border-border",
-                  )}
-                >
-                  <span
-                    className="flex h-16 flex-col gap-1.5 rounded-md p-2"
-                    style={{ background: p.bg }}
-                  >
-                    <span className="h-2 w-10 rounded-sm" style={{ background: p.fg }} />
-                    <span className="flex-1 rounded-sm" style={{ background: p.card }} />
-                  </span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <RadioGroupItem id={`theme-${t.id}`} value={t.id} />
-                    {t.label}
-                  </span>
-                </Label>
-              );
-            })}
+            {THEME_GROUPS.map((group) => (
+              <div key={group.id} className="flex flex-col gap-2.5">
+                <h3 className="text-xs font-medium text-muted-foreground">{group.label}</h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {THEMES.filter((t) => t.group === group.id).map((t) => {
+                    const p = t.preview;
+                    return (
+                      <Label
+                        key={t.id}
+                        htmlFor={`theme-${t.id}`}
+                        className={cn(
+                          "flex cursor-pointer flex-col items-stretch gap-2 rounded-lg border-2 p-2",
+                          appearance.theme === t.id
+                            ? "border-primary"
+                            : "border-transparent hover:border-border",
+                        )}
+                      >
+                        <span
+                          className="flex h-16 flex-col gap-1.5 rounded-md p-2"
+                          style={{ background: p.bg }}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <span className="h-2 w-10 rounded-sm" style={{ background: p.fg }} />
+                            <span
+                              className="size-2 rounded-full"
+                              style={{ background: p.accent }}
+                            />
+                          </span>
+                          <span className="flex-1 rounded-sm" style={{ background: p.card }} />
+                        </span>
+                        <span className="flex items-center gap-2 text-sm">
+                          <RadioGroupItem id={`theme-${t.id}`} value={t.id} />
+                          {t.label}
+                        </span>
+                        <span className="text-xs leading-snug font-normal text-muted-foreground">
+                          {fontLabel(t.fonts.ui, UI_FONTS)} · {fontLabel(t.fonts.mono, MONO_FONTS)}
+                          {t.fonts.reading !== "ui" &&
+                            ` · ${fontLabel(t.fonts.reading, READING_FONTS)}`}
+                        </span>
+                      </Label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </RadioGroup>
+          <p className="text-xs text-muted-foreground">
+            Choosing a theme also picks its fonts; you can change them below. Themes inspired by
+            other tools use their colour schemes only, with open-licence fonts.
+          </p>
 
           <div className="flex flex-col gap-3">
             <Label>Accent</Label>
@@ -100,7 +130,7 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
                 >
                   <span
                     className="size-3 rounded-full"
-                    style={{ background: ACCENT_SWATCH[a.id] }}
+                    style={{ background: a.id === "theme" ? themeAccent : ACCENT_SWATCH[a.id] }}
                   />
                   {a.label}
                 </ToggleGroupItem>
@@ -147,6 +177,28 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="reading-font">Conversation font</Label>
+              <Select
+                value={appearance.readingFont}
+                onValueChange={(v) => update("readingFont", v)}
+              >
+                <SelectTrigger id="reading-font" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {READING_FONTS.map((f) => (
+                    <SelectItem
+                      key={f.id}
+                      value={f.id}
+                      style={f.stack ? { fontFamily: f.stack } : undefined}
+                    >
+                      {f.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -167,7 +219,9 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
           </div>
 
           <div className="rounded-lg bg-muted p-4">
-            <p className="text-sm">Developer finished task 2 and is waiting for review.</p>
+            <p className="font-reading text-sm">
+              Developer finished task 2 and is waiting for review.
+            </p>
             <p className="mt-1 font-mono text-xs text-muted-foreground">
               tool.completed Edit · 1.8 s · source sdk
             </p>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Cog6ToothIcon, FolderIcon } from "@heroicons/react/24/outline";
+import { ProjectsPage } from "@/features/projects/ProjectsPage";
 import { AppearanceSettings } from "@/features/settings/AppearanceSettings";
 import { useAppearance } from "@/features/settings/useAppearance";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,7 @@ const NAV: { id: Page; label: string; Icon: typeof FolderIcon }[] = [
 
 export function App() {
   const [page, setPage] = useState<Page>("projects");
-  const { appearance, update, reset } = useAppearance();
+  const { appearance, update, selectTheme, reset } = useAppearance();
 
   return (
     <div className="flex h-screen flex-col">
@@ -42,22 +43,19 @@ export function App() {
             </button>
           ))}
         </nav>
-        <main className="min-w-0 flex-1 overflow-y-auto p-8">
-          {page === "projects" ? (
-            <section className="max-w-3xl rounded-xl border border-dashed bg-card p-6">
-              <h1 className="text-lg font-semibold">Projects</h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Session discovery is not connected yet. Noburi will list your local Claude Code
-                projects here, read-only.
-              </p>
-            </section>
-          ) : (
-            <>
-              <h1 className="mb-6 text-2xl font-semibold">Appearance</h1>
-              <AppearanceSettings appearance={appearance} update={update} reset={reset} />
-            </>
-          )}
-        </main>
+        {page === "projects" ? (
+          <ProjectsPage />
+        ) : (
+          <main className="min-w-0 flex-1 overflow-y-auto p-8">
+            <h1 className="mb-6 text-2xl font-semibold">Appearance</h1>
+            <AppearanceSettings
+              appearance={appearance}
+              update={update}
+              selectTheme={selectTheme}
+              reset={reset}
+            />
+          </main>
+        )}
       </div>
     </div>
   );

@@ -12,7 +12,8 @@
   --card-foreground: #f6f0e5;
   --popover: #16202a;
   --popover-foreground: #f6f0e5;
-  --primary-foreground: #101820;
+  --nb-theme-primary: #f0be79;
+  --nb-theme-primary-foreground: #101820;
   --secondary: #1f2b35;
   --secondary-foreground: #f6f0e5;
   --muted: #1f2b35;
@@ -45,7 +46,8 @@
   --card-foreground: #101820;
   --popover: #fffdf8;
   --popover-foreground: #101820;
-  --primary-foreground: #101820;
+  --nb-theme-primary: #f0be79;
+  --nb-theme-primary-foreground: #101820;
   --secondary: #ede4d3;
   --secondary-foreground: #101820;
   --muted: #ede4d3;
@@ -79,7 +81,8 @@
   --card-foreground: #f2f0e6;
   --popover: #14201b;
   --popover-foreground: #f2f0e6;
-  --primary-foreground: #0d1613;
+  --nb-theme-primary: #7dd3b0;
+  --nb-theme-primary-foreground: #0d1613;
   --secondary: #1d2b25;
   --secondary-foreground: #f2f0e6;
   --muted: #1d2b25;
@@ -112,7 +115,8 @@
   --card-foreground: #ffffff;
   --popover: #0b0b0b;
   --popover-foreground: #ffffff;
-  --primary-foreground: #000000;
+  --nb-theme-primary: #ffd27a;
+  --nb-theme-primary-foreground: #000000;
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
   --muted: #1a1a1a;
@@ -138,25 +142,367 @@
   --nb-coral: #ff9b8f;
 }
 
-/* Accent drives shadcn's primary everywhere (buttons, focus of selections, sliders). */
+/*
+ * Palettes inspired by tools developers use every day. They are colour schemes only: no logos and
+ * no proprietary fonts (Claude and OpenAI fonts are replaced by close open-licence fonts).
+ * Community palettes follow their published MIT-licensed colour values.
+ */
+
+[data-theme="claude-dark"] {
+  --background: #262624;
+  --foreground: #faf9f5;
+  --card: #30302e;
+  --card-foreground: #faf9f5;
+  --popover: #30302e;
+  --popover-foreground: #faf9f5;
+  --nb-theme-primary: #d97757;
+  --nb-theme-primary-foreground: #141413;
+  --secondary: #3a3a37;
+  --secondary-foreground: #faf9f5;
+  --muted: #30302e;
+  --muted-foreground: #c2c0b6;
+  --accent: #3a3a37;
+  --accent-foreground: #faf9f5;
+  --destructive: #f2867a;
+  --border: #3e3e3a;
+  --input: #4a4945;
+  --ring: #d97757;
+  --sidebar: #1f1e1d;
+  --sidebar-foreground: #faf9f5;
+  --sidebar-accent: #3a3a37;
+  --sidebar-accent-foreground: #faf9f5;
+  --sidebar-border: #2e2d2a;
+  --sidebar-ring: #d97757;
+  --nb-success: #8fc89a;
+  --nb-warning: #e8b45a;
+  --nb-info: #8ab4f8;
+}
+
+[data-theme="claude-light"] {
+  --background: #faf9f5;
+  --foreground: #141413;
+  --card: #ffffff;
+  --card-foreground: #141413;
+  --popover: #ffffff;
+  --popover-foreground: #141413;
+  --nb-theme-primary: #d97757;
+  --nb-theme-primary-foreground: #141413;
+  --secondary: #f0eee6;
+  --secondary-foreground: #141413;
+  --muted: #f0eee6;
+  --muted-foreground: #5e5d59;
+  --accent: #e8e6dc;
+  --accent-foreground: #141413;
+  --destructive: #b3412f;
+  --border: #e5e3da;
+  --input: #d9d6cc;
+  --ring: #c6613f;
+  --sidebar: #f5f4ee;
+  --sidebar-foreground: #141413;
+  --sidebar-accent: #e8e6dc;
+  --sidebar-accent-foreground: #141413;
+  --sidebar-border: #e5e3da;
+  --sidebar-ring: #c6613f;
+  --nb-success: #2f7d4f;
+  --nb-warning: #8a5a12;
+  --nb-info: #2f6fb3;
+}
+
+[data-theme="codex"] {
+  --background: #0d0d0d;
+  --foreground: #ececec;
+  --card: #1a1a1a;
+  --card-foreground: #ececec;
+  --popover: #1a1a1a;
+  --popover-foreground: #ececec;
+  --nb-theme-primary: #ececec;
+  --nb-theme-primary-foreground: #0d0d0d;
+  --secondary: #262626;
+  --secondary-foreground: #ececec;
+  --muted: #212121;
+  --muted-foreground: #b4b4b4;
+  --accent: #2a2a2a;
+  --accent-foreground: #ececec;
+  --destructive: #f28b82;
+  --border: #2a2a2a;
+  --input: #333333;
+  --ring: #ececec;
+  --sidebar: #000000;
+  --sidebar-foreground: #ececec;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #ececec;
+  --sidebar-border: #1f1f1f;
+  --sidebar-ring: #ececec;
+  --nb-success: #10a37f;
+  --nb-warning: #f0c674;
+  --nb-info: #8ab4f8;
+}
+
+[data-theme="github-dark"] {
+  --background: #0d1117;
+  --foreground: #f0f6fc;
+  --card: #151b23;
+  --card-foreground: #f0f6fc;
+  --popover: #151b23;
+  --popover-foreground: #f0f6fc;
+  --nb-theme-primary: #238636;
+  --nb-theme-primary-foreground: #ffffff;
+  --secondary: #212830;
+  --secondary-foreground: #f0f6fc;
+  --muted: #151b23;
+  --muted-foreground: #9198a1;
+  --accent: #262c36;
+  --accent-foreground: #f0f6fc;
+  --destructive: #f85149;
+  --border: #3d444d;
+  --input: #3d444d;
+  --ring: #1f6feb;
+  --sidebar: #010409;
+  --sidebar-foreground: #f0f6fc;
+  --sidebar-accent: #262c36;
+  --sidebar-accent-foreground: #f0f6fc;
+  --sidebar-border: #3d444d;
+  --sidebar-ring: #1f6feb;
+  --nb-success: #3fb950;
+  --nb-warning: #d29922;
+  --nb-info: #4493f8;
+}
+
+[data-theme="github-light"] {
+  --background: #ffffff;
+  --foreground: #1f2328;
+  --card: #f6f8fa;
+  --card-foreground: #1f2328;
+  --popover: #f6f8fa;
+  --popover-foreground: #1f2328;
+  --nb-theme-primary: #1f883d;
+  --nb-theme-primary-foreground: #ffffff;
+  --secondary: #eff2f5;
+  --secondary-foreground: #1f2328;
+  --muted: #f6f8fa;
+  --muted-foreground: #59636e;
+  --accent: #eaeef2;
+  --accent-foreground: #1f2328;
+  --destructive: #cf222e;
+  --border: #d1d9e0;
+  --input: #d1d9e0;
+  --ring: #0969da;
+  --sidebar: #f6f8fa;
+  --sidebar-foreground: #1f2328;
+  --sidebar-accent: #eaeef2;
+  --sidebar-accent-foreground: #1f2328;
+  --sidebar-border: #d1d9e0;
+  --sidebar-ring: #0969da;
+  --nb-success: #1a7f37;
+  --nb-warning: #9a6700;
+  --nb-info: #0969da;
+}
+
+[data-theme="vercel"] {
+  --background: #000000;
+  --foreground: #ededed;
+  --card: #0a0a0a;
+  --card-foreground: #ededed;
+  --popover: #0a0a0a;
+  --popover-foreground: #ededed;
+  --nb-theme-primary: #ededed;
+  --nb-theme-primary-foreground: #0a0a0a;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ededed;
+  --muted: #111111;
+  --muted-foreground: #a1a1a1;
+  --accent: #1f1f1f;
+  --accent-foreground: #ededed;
+  --destructive: #ff6166;
+  --border: #242424;
+  --input: #2e2e2e;
+  --ring: #52a8ff;
+  --sidebar: #000000;
+  --sidebar-foreground: #ededed;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-border: #1a1a1a;
+  --sidebar-ring: #52a8ff;
+  --nb-success: #62c073;
+  --nb-warning: #f5a623;
+  --nb-info: #52a8ff;
+}
+
+[data-theme="dracula"] {
+  --background: #282a36;
+  --foreground: #f8f8f2;
+  --card: #343746;
+  --card-foreground: #f8f8f2;
+  --popover: #343746;
+  --popover-foreground: #f8f8f2;
+  --nb-theme-primary: #bd93f9;
+  --nb-theme-primary-foreground: #282a36;
+  --secondary: #44475a;
+  --secondary-foreground: #f8f8f2;
+  --muted: #343746;
+  --muted-foreground: #b9bfd9;
+  --accent: #44475a;
+  --accent-foreground: #f8f8f2;
+  --destructive: #ff5555;
+  --border: #44475a;
+  --input: #44475a;
+  --ring: #bd93f9;
+  --sidebar: #21222c;
+  --sidebar-foreground: #f8f8f2;
+  --sidebar-accent: #44475a;
+  --sidebar-accent-foreground: #f8f8f2;
+  --sidebar-border: #343746;
+  --sidebar-ring: #bd93f9;
+  --nb-success: #50fa7b;
+  --nb-warning: #f1fa8c;
+  --nb-info: #8be9fd;
+}
+
+[data-theme="nord"] {
+  --background: #2e3440;
+  --foreground: #eceff4;
+  --card: #3b4252;
+  --card-foreground: #eceff4;
+  --popover: #3b4252;
+  --popover-foreground: #eceff4;
+  --nb-theme-primary: #88c0d0;
+  --nb-theme-primary-foreground: #2e3440;
+  --secondary: #434c5e;
+  --secondary-foreground: #eceff4;
+  --muted: #3b4252;
+  --muted-foreground: #d8dee9;
+  --accent: #434c5e;
+  --accent-foreground: #eceff4;
+  --destructive: #e08c94;
+  --border: #434c5e;
+  --input: #4c566a;
+  --ring: #88c0d0;
+  --sidebar: #272c36;
+  --sidebar-foreground: #eceff4;
+  --sidebar-accent: #434c5e;
+  --sidebar-accent-foreground: #eceff4;
+  --sidebar-border: #3b4252;
+  --sidebar-ring: #88c0d0;
+  --nb-success: #a3be8c;
+  --nb-warning: #ebcb8b;
+  --nb-info: #81a1c1;
+}
+
+[data-theme="catppuccin-mocha"] {
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --card: #313244;
+  --card-foreground: #cdd6f4;
+  --popover: #313244;
+  --popover-foreground: #cdd6f4;
+  --nb-theme-primary: #cba6f7;
+  --nb-theme-primary-foreground: #1e1e2e;
+  --secondary: #45475a;
+  --secondary-foreground: #cdd6f4;
+  --muted: #313244;
+  --muted-foreground: #a6adc8;
+  --accent: #45475a;
+  --accent-foreground: #cdd6f4;
+  --destructive: #f38ba8;
+  --border: #45475a;
+  --input: #45475a;
+  --ring: #cba6f7;
+  --sidebar: #181825;
+  --sidebar-foreground: #cdd6f4;
+  --sidebar-accent: #45475a;
+  --sidebar-accent-foreground: #cdd6f4;
+  --sidebar-border: #313244;
+  --sidebar-ring: #cba6f7;
+  --nb-success: #a6e3a1;
+  --nb-warning: #f9e2af;
+  --nb-info: #89b4fa;
+}
+
+[data-theme="tokyo-night"] {
+  --background: #1a1b26;
+  --foreground: #c0caf5;
+  --card: #24283b;
+  --card-foreground: #c0caf5;
+  --popover: #24283b;
+  --popover-foreground: #c0caf5;
+  --nb-theme-primary: #7aa2f7;
+  --nb-theme-primary-foreground: #1a1b26;
+  --secondary: #292e42;
+  --secondary-foreground: #c0caf5;
+  --muted: #24283b;
+  --muted-foreground: #a9b1d6;
+  --accent: #292e42;
+  --accent-foreground: #c0caf5;
+  --destructive: #f7768e;
+  --border: #292e42;
+  --input: #3b4261;
+  --ring: #7aa2f7;
+  --sidebar: #16161e;
+  --sidebar-foreground: #c0caf5;
+  --sidebar-accent: #292e42;
+  --sidebar-accent-foreground: #c0caf5;
+  --sidebar-border: #24283b;
+  --sidebar-ring: #7aa2f7;
+  --nb-success: #9ece6a;
+  --nb-warning: #e0af68;
+  --nb-info: #7dcfff;
+}
+
+[data-theme="solarized-light"] {
+  --background: #fdf6e3;
+  --foreground: #073642;
+  --card: #eee8d5;
+  --card-foreground: #073642;
+  --popover: #eee8d5;
+  --popover-foreground: #073642;
+  --nb-theme-primary: #1f6ea8;
+  --nb-theme-primary-foreground: #ffffff;
+  --secondary: #eee8d5;
+  --secondary-foreground: #073642;
+  --muted: #eee8d5;
+  --muted-foreground: #4a5a60;
+  --accent: #e4dcc4;
+  --accent-foreground: #073642;
+  --destructive: #b02a27;
+  --border: #e4dcc4;
+  --input: #d6cdb3;
+  --ring: #268bd2;
+  --sidebar: #f5eedb;
+  --sidebar-foreground: #073642;
+  --sidebar-accent: #e4dcc4;
+  --sidebar-accent-foreground: #073642;
+  --sidebar-border: #e4dcc4;
+  --sidebar-ring: #268bd2;
+  --nb-success: #5b6b00;
+  --nb-warning: #8a5a00;
+  --nb-info: #1f6ea8;
+}
+
+/* Accent drives shadcn's primary everywhere (buttons, selections, sliders). "theme" uses the
+   palette's own accent; the fixed accents keep dark text, which passes on all of them. */
 :root,
+[data-accent="theme"] {
+  --primary: var(--nb-theme-primary);
+  --primary-foreground: var(--nb-theme-primary-foreground);
+}
 [data-accent="honey"] {
   --primary: var(--nb-honey);
-  --sidebar-primary: var(--nb-honey);
+  --primary-foreground: #101820;
 }
 [data-accent="mint"] {
   --primary: var(--nb-mint);
-  --sidebar-primary: var(--nb-mint);
+  --primary-foreground: #101820;
 }
 [data-accent="sky"] {
   --primary: var(--nb-sky);
-  --sidebar-primary: var(--nb-sky);
+  --primary-foreground: #101820;
 }
 [data-accent="coral"] {
   --primary: var(--nb-coral);
-  --sidebar-primary: var(--nb-coral);
+  --primary-foreground: #101820;
 }
 :root {
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
 }
 
