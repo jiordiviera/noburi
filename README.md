@@ -7,6 +7,9 @@
 > Code agents, saved locally in SQLite, with a pixel office that shows what each agent is really doing.
 > Each mission chooses what its agents inherit from your Claude Code setup (settings, hooks, MCP servers, skills).
 > See `docs/DECISIONS.md`.
+>
+> Next: Noburi is becoming a management game where you lead a team of real Claude Code agents. See
+> `docs/GAME_DESIGN.md`.
 
 ## Develop
 
