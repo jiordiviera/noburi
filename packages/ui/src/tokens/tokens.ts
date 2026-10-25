@@ -1,6 +1,9 @@
 // Source of truth for Cozy Pixel tokens; tokens.css mirrors these values.
 export const color = {
+  canvas: "#0C131A",
   night: "#101820",
+  surface: "#16202A",
+  raised: "#1F2B35",
   slate: "#26323D",
   surface2: "#1B252E",
   border: "#34424E",

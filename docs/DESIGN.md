@@ -79,4 +79,7 @@ Feedback: v1 felt scattered, the office was not real pixel art, SVGL logos were 
   mission tabs as one surface, and a docked agent panel. Fewer borders, one surface tone per level.
 - **Provider logos**: Claude, Anthropic, Gemini and OpenAI from SVGL, bundled in `assets/vendor/svgl/` with
   `PROVENANCE.md`. Never fetched at runtime.
-- Other boards still use the v1 style; they follow once the Office v2 direction is approved.
+- All six boards now use v2: canvas `#0C131A`, chrome Night `#101820`, surface `#16202A`, raised/divider
+  `#1F2B35`, Slate `#26323D` for selection. Status pills are tinted (14 % alpha); only "Needs you" is solid Honey.
+- GitHub and Buy Me a Coffee marks come from SVGL too (`github_dark.svg`, `bmc.svg`). The landing links the public
+  repo and has an Open source section; the licence stays a placeholder until LICENSE is added.

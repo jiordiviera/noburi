@@ -52,3 +52,19 @@ instead. See `docs/DESIGN.md`.
 `assets/worlds/cozy-office/map.json` uses a pre-rendered `backgroundImage` plus a `deskSprite` and agent slots,
 instead of the tile layers in spec §30. Reason: the scene is generated as one crisp SVG, which is simpler to
 render and to validate. Tile layers can be added later for user-made maps; the pack schema will accept both.
+
+## D7 — shadcn/ui and appearance settings
+
+- `apps/desktop` uses Tailwind CSS 4.3 and shadcn/ui (CLI 4.22, Radix base, `radix-nova` style). Components live
+  in `apps/desktop/src/components/ui` as owned source.
+- shadcn variables are filled by Noburi themes in `packages/ui/src/themes.css`: Cozy Night (default), Cozy Day,
+  Matcha, High contrast. `data-theme`, `data-accent`, `data-density`, `data-motion` sit on `<html>`; dark themes
+  also set the `.dark` class that shadcn's `dark:` variant expects.
+- `packages/ui/src/appearance.ts` holds the settings schema (theme, accent, UI font, mono font, text size,
+  density, corners, office zoom, reduce motion). Stored values are repaired field by field, never trusted.
+- Fonts are bundled through `@fontsource` (all SIL OFL 1.1): Geist, Inter, IBM Plex Sans, Atkinson Hyperlegible
+  Next, Geist Mono, JetBrains Mono, IBM Plex Mono, Pixelify Sans. No font is fetched at runtime.
+- Compact density works by lowering Tailwind's `--spacing`; text size scales the root font size.
+- Appearance is per-device and kept in `localStorage` for now; it moves to the runtime settings store with SQLite.
+- shadcn primitives keep their internal lucide icons (chevrons, checks). App-level icons stay Heroicons.
+- `cn` comes from shadcn's own `cn` package (replaces clsx + tailwind-merge).

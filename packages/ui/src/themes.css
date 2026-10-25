@@ -1,0 +1,159 @@
+/*
+ * Noburi themes, expressed as shadcn/ui variables plus Noburi status colours.
+ * Applied with data-theme / data-accent / data-density on <html> (see appearance.ts).
+ * Text pairs are checked to at least 4.5:1 on their surfaces.
+ */
+
+:root,
+[data-theme="cozy-night"] {
+  --background: #0c131a;
+  --foreground: #f6f0e5;
+  --card: #16202a;
+  --card-foreground: #f6f0e5;
+  --popover: #16202a;
+  --popover-foreground: #f6f0e5;
+  --primary-foreground: #101820;
+  --secondary: #1f2b35;
+  --secondary-foreground: #f6f0e5;
+  --muted: #1f2b35;
+  --muted-foreground: #a7b3be;
+  --accent: #26323d;
+  --accent-foreground: #f6f0e5;
+  --destructive: #f2867a;
+  --border: #1f2b35;
+  --input: #26323d;
+  --ring: #8ec5ff;
+  --sidebar: #101820;
+  --sidebar-foreground: #f6f0e5;
+  --sidebar-accent: #26323d;
+  --sidebar-accent-foreground: #f6f0e5;
+  --sidebar-border: #1b252e;
+  --sidebar-ring: #8ec5ff;
+  --nb-success: #7dd3b0;
+  --nb-warning: #f0be79;
+  --nb-info: #8ec5ff;
+  --nb-honey: #f0be79;
+  --nb-mint: #7dd3b0;
+  --nb-sky: #8ec5ff;
+  --nb-coral: #f2867a;
+}
+
+[data-theme="cozy-day"] {
+  --background: #f6f0e5;
+  --foreground: #101820;
+  --card: #fffdf8;
+  --card-foreground: #101820;
+  --popover: #fffdf8;
+  --popover-foreground: #101820;
+  --primary-foreground: #101820;
+  --secondary: #ede4d3;
+  --secondary-foreground: #101820;
+  --muted: #ede4d3;
+  --muted-foreground: #4f5a64;
+  --accent: #e6dbc6;
+  --accent-foreground: #101820;
+  --destructive: #b3412f;
+  --border: #e2d7c3;
+  --input: #d8ccb6;
+  --ring: #2f6fb3;
+  --sidebar: #efe7d8;
+  --sidebar-foreground: #101820;
+  --sidebar-accent: #e6dbc6;
+  --sidebar-accent-foreground: #101820;
+  --sidebar-border: #e2d7c3;
+  --sidebar-ring: #2f6fb3;
+  --nb-success: #23795a;
+  --nb-warning: #8a5a12;
+  --nb-info: #2f6fb3;
+  /* Accent fills stay light enough for dark text on buttons. */
+  --nb-honey: #f0be79;
+  --nb-mint: #7dd3b0;
+  --nb-sky: #8ec5ff;
+  --nb-coral: #f2a091;
+}
+
+[data-theme="matcha"] {
+  --background: #0d1613;
+  --foreground: #f2f0e6;
+  --card: #14201b;
+  --card-foreground: #f2f0e6;
+  --popover: #14201b;
+  --popover-foreground: #f2f0e6;
+  --primary-foreground: #0d1613;
+  --secondary: #1d2b25;
+  --secondary-foreground: #f2f0e6;
+  --muted: #1d2b25;
+  --muted-foreground: #a3b8ae;
+  --accent: #25362f;
+  --accent-foreground: #f2f0e6;
+  --destructive: #f2867a;
+  --border: #1d2b25;
+  --input: #25362f;
+  --ring: #a6e4cb;
+  --sidebar: #101b17;
+  --sidebar-foreground: #f2f0e6;
+  --sidebar-accent: #25362f;
+  --sidebar-accent-foreground: #f2f0e6;
+  --sidebar-border: #1a2722;
+  --sidebar-ring: #a6e4cb;
+  --nb-success: #7dd3b0;
+  --nb-warning: #f0be79;
+  --nb-info: #8ec5ff;
+  --nb-honey: #f0be79;
+  --nb-mint: #7dd3b0;
+  --nb-sky: #8ec5ff;
+  --nb-coral: #f2867a;
+}
+
+[data-theme="high-contrast"] {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0b0b0b;
+  --card-foreground: #ffffff;
+  --popover: #0b0b0b;
+  --popover-foreground: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #d9d9d9;
+  --accent: #262626;
+  --accent-foreground: #ffffff;
+  --destructive: #ff9b8f;
+  --border: #8a8a8a;
+  --input: #8a8a8a;
+  --ring: #ffffff;
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #8a8a8a;
+  --sidebar-ring: #ffffff;
+  --nb-success: #8ff0c8;
+  --nb-warning: #ffd27a;
+  --nb-info: #a8d3ff;
+  --nb-honey: #ffd27a;
+  --nb-mint: #8ff0c8;
+  --nb-sky: #a8d3ff;
+  --nb-coral: #ff9b8f;
+}
+
+/* Accent drives shadcn's primary everywhere (buttons, focus of selections, sliders). */
+:root,
+[data-accent="honey"] { --primary: var(--nb-honey); --sidebar-primary: var(--nb-honey); }
+[data-accent="mint"] { --primary: var(--nb-mint); --sidebar-primary: var(--nb-mint); }
+[data-accent="sky"] { --primary: var(--nb-sky); --sidebar-primary: var(--nb-sky); }
+[data-accent="coral"] { --primary: var(--nb-coral); --sidebar-primary: var(--nb-coral); }
+:root { --sidebar-primary-foreground: var(--primary-foreground); }
+
+/* Tailwind v4 derives every spacing utility from --spacing. */
+[data-density="compact"] { --spacing: 0.21rem; }
+
+html { font-size: calc(16px * var(--nb-font-scale, 1)); }
+
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
