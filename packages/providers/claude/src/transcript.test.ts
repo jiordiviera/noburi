@@ -170,6 +170,57 @@ describe("mapSdkMessage", () => {
     } as unknown as SDKMessage;
     expect(mapSdkMessage(sub)).toEqual([]);
   });
+
+  it("keeps Claude Code's injected context out of the person's messages", () => {
+    const entries = normalizeTranscript([
+      {
+        type: "user",
+        uuid: "c1",
+        parent_tool_use_id: null,
+        isCompactSummary: true,
+        is_meta: true,
+        message: {
+          role: "user",
+          content: "<artifact-content-authored-by-others/>\nSummary: built X",
+        },
+      },
+      {
+        type: "user",
+        uuid: "m1",
+        parent_tool_use_id: null,
+        is_meta: true,
+        message: {
+          role: "user",
+          content: [{ type: "text", text: "Base directory for this skill" }],
+        },
+      },
+      {
+        type: "user",
+        uuid: "u1",
+        parent_tool_use_id: null,
+        message: {
+          role: "user",
+          content:
+            '<system-reminder>\nnoise\n</system-reminder>\n<artifact-view-context artifact="a">{}</artifact-view-context>\nhow do I start the app?',
+        },
+      },
+      {
+        type: "user",
+        uuid: "u2",
+        parent_tool_use_id: null,
+        message: {
+          role: "user",
+          content:
+            "<command-message>review</command-message>\n<command-name>/review</command-name>\n<command-args>main</command-args>",
+        },
+      },
+    ]);
+    expect(entries.map((e) => [e.role, e.parts])).toEqual([
+      ["system", [{ kind: "summary", text: "Summary: built X" }]],
+      ["user", [{ kind: "text", text: "how do I start the app?" }]],
+      ["user", [{ kind: "text", text: "/review main" }]],
+    ]);
+  });
 });
 
 describe("describeToolInput", () => {

@@ -48,6 +48,18 @@ function Part({ part }: { part: TranscriptPart }) {
       </p>
     );
   }
+  if (part.kind === "summary") {
+    return (
+      <details className="rounded-lg bg-card px-3 py-2 text-sm text-muted-foreground">
+        <summary className="cursor-pointer select-none">
+          Earlier messages were summarized by Claude Code
+        </summary>
+        <p className="mt-2 font-reading leading-relaxed whitespace-pre-wrap break-words">
+          {part.text}
+        </p>
+      </details>
+    );
+  }
   if (part.kind === "tool_use") {
     return (
       <div className="flex items-center gap-2 rounded-lg bg-card px-3 py-2 font-mono text-xs text-muted-foreground">
