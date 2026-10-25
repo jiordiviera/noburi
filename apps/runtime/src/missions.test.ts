@@ -43,6 +43,7 @@ function fakeClaude(prompts: string[]) {
         approvalId: "a1",
         toolName: "Bash",
         summary: "pnpm test",
+        detail: "pnpm test",
         blockedPath: null,
       });
       yield { type: "text", text: ok ? "tests ran" : "skipped" };

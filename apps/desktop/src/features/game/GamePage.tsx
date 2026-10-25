@@ -41,6 +41,7 @@ import {
 import { useWalker } from "./useWalker";
 import "../office/office.css";
 import "./game.css";
+import { ApprovalDetail } from "@/components/ApprovalDetail";
 
 const sprites = import.meta.glob<string>("../../../../../assets/avatars/official/*/*.svg", {
   eager: true,
@@ -178,7 +179,15 @@ export function GamePage() {
     [missions, repo],
   );
   const active = repoMissions.find((m) => m.mission.status === "RUNNING") ?? null;
-  const delivered = repoMissions.filter((m) => m.mission.status === "COMPLETED");
+  // A mission counts as delivered only when its agent reported a pull request; one that stopped
+  // without opening one (for example after a refusal) is listed apart, never counted.
+  const finished = repoMissions
+    .filter((m) => m.mission.status === "COMPLETED")
+    .map((m) => ({
+      mission: m.mission,
+      pullRequest: pullRequestUrl(m.tasks.map((t) => t.resultText ?? "").join("\n")),
+    }));
+  const delivered = finished.filter((f) => f.pullRequest !== null);
   const { view, events } = useMission(active?.mission.id ?? repoMissions[0]?.mission.id ?? null);
 
   const developer = agents.find((a) => a.id === "developer");
@@ -513,9 +522,11 @@ export function GamePage() {
               {approvals.map((e) => (
                 <div key={e.seq} className="flex flex-col gap-2 rounded-lg bg-card p-3">
                   <p className="text-sm">The developer asks to run:</p>
-                  <code className="font-mono text-xs break-all">
-                    {str(e.payload["toolName"])} · {str(e.payload["summary"])}
-                  </code>
+                  <p className="font-mono text-xs">{str(e.payload["toolName"])}</p>
+                  <ApprovalDetail
+                    detail={str(e.payload["detail"])}
+                    summary={str(e.payload["summary"])}
+                  />
                   <div className="flex justify-end gap-2">
                     <Button
                       variant="outline"
@@ -548,38 +559,44 @@ export function GamePage() {
             </>
           )}
 
-          {dialog?.kind === "tray" && <Tray delivered={delivered} />}
+          {dialog?.kind === "tray" && <Tray finished={finished} />}
         </DialogContent>
       </Dialog>
     </main>
   );
 }
 
-/** Finished issues and the pull request each agent reported, read from the mission's summary. */
-function Tray({ delivered }: { delivered: MissionView[] }) {
-  const [links, setLinks] = useState<Record<string, string | null>>({});
-  useEffect(() => {
-    let current = true;
-    for (const m of delivered) {
-      runtime.mission(m.mission.id).then(
-        (v) => {
-          if (!current) return;
-          const text = [
-            ...v.artifacts.map((a) => a.content),
-            ...v.tasks.map((t) => t.resultText ?? ""),
-          ].join("\n");
-          setLinks((prev) => ({ ...prev, [m.mission.id]: pullRequestUrl(text) }));
-        },
-        () => {},
-      );
-    }
-    return () => {
-      current = false;
-    };
-  }, [delivered]);
+interface Finished {
+  mission: MissionView["mission"];
+  pullRequest: string | null;
+}
+
+/** Pull requests to review, then issues an agent stopped on without opening one. */
+function Tray({ finished }: { finished: Finished[] }) {
+  const delivered = finished.filter((f) => f.pullRequest !== null);
+  const stopped = finished.filter((f) => f.pullRequest === null);
+  const row = (f: Finished) => (
+    <li key={f.mission.id} className="flex min-w-0 items-center gap-3 rounded-lg bg-card p-3">
+      <span className="min-w-0 flex-1 truncate text-sm" title={f.mission.title}>
+        {f.mission.title}
+      </span>
+      {f.pullRequest ? (
+        <a
+          href={f.pullRequest}
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 text-sm underline"
+        >
+          Pull request #{f.pullRequest.split("/").pop()}
+        </a>
+      ) : (
+        <span className="shrink-0 text-xs text-muted-foreground">No pull request</span>
+      )}
+    </li>
+  );
 
   return (
-    <>
+    <div className="flex min-w-0 flex-col gap-4">
       <DialogHeader>
         <DialogTitle>To review</DialogTitle>
         <DialogDescription>
@@ -587,28 +604,18 @@ function Tray({ delivered }: { delivered: MissionView[] }) {
         </DialogDescription>
       </DialogHeader>
       {delivered.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nothing delivered yet.</p>
+        <p className="text-sm text-muted-foreground">No pull request to review yet.</p>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {delivered.map((m) => {
-            const link = links[m.mission.id];
-            return (
-              <li key={m.mission.id} className="flex items-center gap-3 rounded-lg bg-card p-3">
-                <span className="min-w-0 flex-1 truncate text-sm">{m.mission.title}</span>
-                {link ? (
-                  <a href={link} target="_blank" rel="noreferrer" className="text-sm underline">
-                    Pull request
-                  </a>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    {link === null ? "No pull request reported" : "…"}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <ul className="flex min-w-0 flex-col gap-2">{delivered.map(row)}</ul>
       )}
-    </>
+      {stopped.length > 0 && (
+        <div className="flex min-w-0 flex-col gap-2">
+          <p className="text-xs text-muted-foreground">
+            Ended without a pull request ({stopped.length})
+          </p>
+          <ul className="flex min-w-0 flex-col gap-2 opacity-70">{stopped.map(row)}</ul>
+        </div>
+      )}
+    </div>
   );
 }

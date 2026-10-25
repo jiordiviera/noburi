@@ -330,6 +330,7 @@ export class MissionService {
             approvalId: event.approvalId,
             toolName: event.toolName,
             summary: event.summary,
+            detail: event.detail,
             blockedPath: event.blockedPath,
           },
           id,

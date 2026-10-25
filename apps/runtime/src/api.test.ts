@@ -52,6 +52,7 @@ async function* fakeRun(options: ClaudeRunOptions): AsyncGenerator<RunEvent> {
     approvalId: "ap1",
     toolName: "Bash",
     summary: "pnpm test",
+    detail: "pnpm test",
     blockedPath: null,
   });
   if (options.signal.aborted) return;
