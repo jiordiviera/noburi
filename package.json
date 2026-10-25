@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "desktop": "pnpm --filter @noburi/desktop tauri dev",
     "dev:runtime": "pnpm --filter @noburi/runtime dev",
     "dev:desktop": "pnpm --filter @noburi/desktop dev",
     "check": "vp check --deny-warnings",

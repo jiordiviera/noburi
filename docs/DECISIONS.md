@@ -135,3 +135,17 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - `packages/ui/src/themes.test.ts` computes WCAG contrast for every theme from `themes.css`: text, secondary
   text, button text, error/success/warning/info text, and dark text on the fixed accents must reach 4.5:1. It
   caught Solarized's button (4.08:1), now a darker blue with white text.
+
+## D12 — Tauri 2 shell
+
+- `apps/desktop/src-tauri` (Tauri 2.12). `pnpm desktop` runs `tauri dev`: Vite serves the UI on port 1420 and
+  the shell opens it in a native window (1440×900, min 1024×640).
+- The shell owns the runtime's lifetime. In development it starts `pnpm --filter @noburi/runtime start` from
+  the workspace in its own process group, reads the `runtime.ready` line, and serves `{ url, token }` through
+  the `runtime_info` command; the webview never sees an environment variable and the token is never logged.
+- On exit the whole process group gets SIGTERM. The runtime is also started with a stdin pipe and
+  `NOBURI_EXIT_ON_STDIN_CLOSE=1`, so it exits by itself if the shell crashes.
+- Packaged builds are not done yet: they need the runtime bundled as a sidecar (Node or a single executable).
+- CSP for packaged builds allows only the app itself, the IPC bridge and `http://127.0.0.1:*`.
+- App icons in `src-tauri/icons` are generated with `tauri icon` from `assets/brand/source/noburi-app-icon.svg`.
+- CI compiles and tests the Rust shell on Ubuntu (`cargo test --locked`) with the Tauri system libraries.

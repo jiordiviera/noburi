@@ -18,6 +18,11 @@ const boundPort = await listenLoopback(server, port);
 // The desktop shell reads this line from stdout to connect; the token is never logged elsewhere.
 process.stdout.write(`${JSON.stringify({ event: "runtime.ready", port: boundPort, token })}\n`);
 
-for (const signal of ["SIGINT", "SIGTERM"] as const) {
-  process.on(signal, () => server.close(() => process.exit(0)));
+const shutdown = () => server.close(() => process.exit(0));
+for (const signal of ["SIGINT", "SIGTERM"] as const) process.on(signal, shutdown);
+
+// Set by the desktop shell: if it dies without stopping us, its pipe closes and we leave too.
+if (process.env.NOBURI_EXIT_ON_STDIN_CLOSE === "1") {
+  process.stdin.on("end", shutdown);
+  process.stdin.resume();
 }
