@@ -1,0 +1,27 @@
+/* Nearest-neighbour scaling keeps the 16 px art crisp at any whole-number zoom. */
+.office-px {
+  image-rendering: pixelated;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The only motion in the office: a one-pixel bob while a tool is really running. */
+@keyframes office-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 calc(-1px * var(--nb-office-scale, 3));
+  }
+}
+
+.office-working {
+  animation: office-bob 0.6s steps(2, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .office-working {
+    animation: none;
+  }
+}

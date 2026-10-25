@@ -14,7 +14,8 @@ export async function gitChanges(cwd: string): Promise<string | null> {
       run("git", ["diff", "--stat", "HEAD"], { cwd, maxBuffer: 1 << 20 }),
       run("git", ["status", "--short"], { cwd, maxBuffer: 1 << 20 }),
     ]);
-    const out = [status.stdout.trim(), stat.stdout.trim()].filter(Boolean).join("\n\n");
+    // trimEnd keeps the leading space git uses in "XY path" status codes.
+    const out = [status.stdout.trimEnd(), stat.stdout.trimEnd()].filter(Boolean).join("\n\n");
     return out || "No changes in the working tree.";
   } catch {
     return null;

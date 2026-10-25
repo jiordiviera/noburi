@@ -13,6 +13,8 @@ import {
   type PlanTask,
 } from "@/lib/runtime";
 import { cn } from "@/lib/utils";
+import { Office } from "../office/Office";
+import { deriveOffice } from "../office/officeState";
 import { PlanEditor } from "./PlanEditor";
 import { MISSION_STATUS, TASK_STATUS } from "./status";
 import { useMission } from "./useMission";
@@ -169,6 +171,16 @@ export function MissionDetail({ missionId, agents, onChanged, onDeleted }: Props
             </Alert>
           )}
 
+          <Office
+            agents={deriveOffice(agents, tasks, events, mission.status)}
+            onSelect={(agent) => {
+              if (agent.taskId)
+                document
+                  .getElementById(`task-${agent.taskId}`)
+                  ?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          />
+
           <section className="flex flex-col gap-2">
             <h2 className="text-sm font-semibold">Objective</h2>
             <p className="font-reading text-sm leading-relaxed whitespace-pre-wrap">
@@ -294,7 +306,11 @@ function TaskList({
         const own = events.filter((e) => e.taskId === task.id);
         const usage = own.filter((e) => e.type === "usage.updated").at(-1)?.payload;
         return (
-          <article key={task.id} className="flex flex-col gap-3 rounded-xl bg-card p-4">
+          <article
+            key={task.id}
+            id={`task-${task.id}`}
+            className="flex scroll-mt-4 flex-col gap-3 rounded-xl bg-card p-4"
+          >
             <div className="flex items-center gap-3">
               <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent font-mono text-xs">
                 {task.position + 1}
