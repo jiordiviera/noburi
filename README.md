@@ -55,12 +55,12 @@ docs              design and decisions
 
 ## Licence
 
-Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 The Noburi name, logo and app icon are not covered by the licence. Third-party logos in
 `assets/vendor/svgl/` belong to their owners.
 
 ## Support
 
-Noburi is free. If it helps you, you can [buy the maintainer a coffee](https://buymeacoffee.com/jiordiviera) —
+Noburi is free. If it helps you, you can [buy the maintainer a coffee](https://buymeacoffee.com/jiordiviera),
 entirely optional, nothing is locked behind it.

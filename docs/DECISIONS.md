@@ -2,7 +2,7 @@
 
 Versions were checked on npm on 2026-10-25.
 
-## D1 — Toolchain
+## D1: Toolchain
 
 - Node 22 (local v22.23.4), pnpm 12.15.0 workspaces, Rust 1.99.1 for Tauri later.
 - TypeScript **6.0.3**. It was first chosen because `typescript-eslint` capped TypeScript at `<6.1`; ESLint is
@@ -12,7 +12,7 @@ Versions were checked on npm on 2026-10-25.
   through `tsx`. No build step per package until packaging needs one.
 - `esbuild` is the only dependency allowed to run install scripts (`allowBuilds` in `pnpm-workspace.yaml`).
 
-## D2 — Claude integration: `@anthropic-ai/claude-agent-sdk` 0.3.310
+## D2: Claude integration: `@anthropic-ai/claude-agent-sdk` 0.3.310
 
 Checked in the package's type definitions:
 
@@ -27,14 +27,14 @@ Checked in the package's type definitions:
 Still to confirm before coding the adapter: how usage is reported on result messages, and the auth/terms for
 using the SDK with a subscription plan (spec R1).
 
-## D3 — Runtime API
+## D3: Runtime API
 
 - Plain `node:http` for now (one endpoint); revisit if routes grow.
 - Binds `127.0.0.1` only, port chosen by the OS, ephemeral bearer token generated at start and printed once on
   stdout as `{"event":"runtime.ready","port","token"}` for the desktop shell to read.
 - Origin allowlist: Vite dev server `http://localhost:1420` and the Tauri webview origins.
 
-## D4 — Scope of this scaffold
+## D4: Scope of this scaffold
 
 Created now: `packages/core` (domain schemas, task state machine, event schema), `packages/ui` (tokens),
 `packages/assets` (pack manifest schema), `apps/runtime` (authenticated loopback server), `apps/desktop`
@@ -43,18 +43,18 @@ Created now: `packages/core` (domain schemas, task state machine, event schema),
 Not created yet, on purpose (no empty packages): `packages/providers/claude`, `packages/tools`, `apps/landing`,
 `src-tauri`, SQLite persistence, `scripts/build-icons.mjs`. Each lands with the milestone that uses it.
 
-## D5 — Design phase
+## D5: Design phase
 
 `/design` and `/design-sync` were not available in this session; the design was made on a Claude Design canvas
 instead. See `docs/DESIGN.md`.
 
-## D6 — Office map format
+## D6: Office map format
 
 `assets/worlds/cozy-office/map.json` uses a pre-rendered `backgroundImage` plus a `deskSprite` and agent slots,
 instead of the tile layers in spec §30. Reason: the scene is generated as one crisp SVG, which is simpler to
 render and to validate. Tile layers can be added later for user-made maps; the pack schema will accept both.
 
-## D7 — shadcn/ui and appearance settings
+## D7: shadcn/ui and appearance settings
 
 - `apps/desktop` uses Tailwind CSS 4.3 and shadcn/ui (CLI 4.22, Radix base, `radix-nova` style). Components live
   in `apps/desktop/src/components/ui` as owned source.
@@ -70,7 +70,7 @@ render and to validate. Tile layers can be added later for user-made maps; the p
 - shadcn primitives keep their internal lucide icons (chevrons, checks). App-level icons stay Heroicons.
 - `cn` comes from shadcn's own `cn` package (replaces clsx + tailwind-merge).
 
-## D8 — Vite+ as the single toolchain
+## D8: Vite+ as the single toolchain
 
 `vite-plus` 1.4 (`vp`) replaces ESLint, standalone Oxlint, Vitest and tsx:
 
@@ -87,14 +87,14 @@ render and to validate. Tile layers can be added later for user-made maps; the p
   invalid.
 - Biome was considered: it lints and formats but does not type-check, so `tsc` would have stayed.
 
-## D9 — Licence
+## D9: Licence
 
 Apache-2.0 (official text, SHA-256 `cfc7749b…d30`) with a `NOTICE` file. Chosen over MIT for the explicit patent
 grant from contributors and because section 6 states the licence gives no trademark rights, which keeps the
 Noburi name and logo out of the code licence as the spec asks. Third-party logos and fonts keep their own terms.
 The original pixel art is covered by Apache-2.0 for now; a separate asset licence (CC-BY-4.0) can be added later.
 
-## D10 — Existing Claude Code sessions
+## D10: Existing Claude Code sessions
 
 - Discovery and reading use only `listSessions`, `getSessionInfo` and `getSessionMessages` from
   `@anthropic-ai/claude-agent-sdk` 0.3.310; no hand-written JSONL parser. A test fails if the session source
@@ -120,7 +120,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Not done yet: real end-to-end resume test against Claude on a real account, detecting a CLI process that holds
   a session (only the 2-minute heuristic exists), and reading the newest messages first in very long sessions.
 
-## D11 — Theme presets
+## D11: Theme presets
 
 - 15 themes in three groups: Noburi (Cozy Night, Cozy Day, Matcha, High contrast), inspired by developer
   tools (Claude Dark/Light, Codex, GitHub Dark/Light, Vercel) and community classics (Dracula, Nord,
@@ -136,7 +136,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   text, button text, error/success/warning/info text, and dark text on the fixed accents must reach 4.5:1. It
   caught Solarized's button (4.08:1), now a darker blue with white text.
 
-## D12 — Tauri 2 shell
+## D12: Tauri 2 shell
 
 - `apps/desktop/src-tauri` (Tauri 2.12). `pnpm desktop` runs `tauri dev`: Vite serves the UI on port 1420 and
   the shell opens it in a native window (1440×900, min 1024×640).
@@ -150,7 +150,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - App icons in `src-tauri/icons` are generated with `tauri icon` from `assets/brand/source/noburi-app-icon.svg`.
 - CI compiles and tests the Rust shell on Ubuntu (`cargo test --locked`) with the Tauri system libraries.
 
-## D13 — Missions and persistence
+## D13: Missions and persistence
 
 - Storage: `node:sqlite` (built into Node 22+, no native module to compile), one file per user:
   `$XDG_DATA_HOME/noburi/noburi.db` on Linux, `~/Library/Application Support/Noburi` on macOS,
@@ -171,7 +171,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   when it is a repository (read-only). Nothing is committed or merged.
 - Fixed along the way: a stop requested before a run had started was ignored by `runClaude`.
 
-## D14 — The pixel office
+## D14: The pixel office
 
 - Drawn with plain DOM images (`apps/desktop/src/features/office/`), not PixiJS: three characters, three desks
   and a static background do not need a WebGL scene, and DOM elements stay accessible (each nameplate is a
@@ -187,7 +187,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   Settings or the system preference.
 - Slots follow `assets/worlds/cozy-office/map.json`: Developer, Architect (reviewer sprite), Researcher.
 
-## D15 — Usage and budgets
+## D15: Usage and budgets
 
 - `GET /usage` aggregates the `usage.updated` events of every mission: input, output, cache read and cache write
   tokens exactly as the SDK `result` message reported them, by mission and by agent + model (the alias Noburi
@@ -201,7 +201,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Schema change handled by an idempotent migration (`budget_tokens` column added if missing).
 - Not counted yet: sessions continued from Projects (their runs are not persisted).
 
-## D16 — Linux package
+## D16: Linux package
 
 - `pnpm package:linux` runs `tauri build` with `src-tauri/tauri.bundle.json`, producing a `.deb` and an AppImage.
   The bundle config is separate so `tauri dev` and the CI shell job do not need the generated runtime files.
@@ -220,7 +220,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Data stays in `~/.local/share/noburi/` for both dev and packaged builds.
 - Not done: signing, update channel, macOS/Windows packages.
 
-## D17 — What mission agents inherit from Claude Code
+## D17: What mission agents inherit from Claude Code
 
 - Missions run unattended, so a global hook or plugin made for an interactive terminal can derail them. Seen in
   real runs: a user-level plugin hook pushed agents into four unrelated `Skill` calls.
@@ -234,7 +234,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Skills are a visibility filter, not a sandbox; tool approvals still apply in every preset.
 - Checked with a real Isolated mission in a throwaway repo: completed, tests passed, no `Skill` call.
 
-## D18 — Noburi becomes a management game
+## D18: Noburi becomes a management game
 
 - Reviewed with the author: as a dashboard, Noburi repeated what Claude Code and its desktop app already do.
   It is now a management game where the player is the project lead and the staff are real Claude Code agents.
@@ -245,7 +245,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   merging stays with the player.
 - Test repository: `jiordiviera/noburi-playground` (private), with four sample issues.
 
-## D19 — Game scene prototype
+## D19: Game scene prototype
 
 - The Office is now the first screen: the cozy-office background, a board of the repository's open GitHub
   issues, the developer's desk and the player's desk with a "To review" tray. The older screens stay for now.

@@ -1,4 +1,4 @@
-# Noburi design — Cozy Pixel
+# Noburi design: Cozy Pixel
 
 Status: v0.1 design phase. Design canvas: https://claude.ai/artifact/L8SciTeRpDVGkZqxRHy3u1 (private to the owner).
 
@@ -10,17 +10,17 @@ Claude Code session used to start the project, so the design was produced on a C
 canvas and in `packages/ui/src/tokens/` are the same values; a test keeps `tokens.css` in sync with `tokens.ts`.
 
 Boards on the canvas: Brand & tokens, Projects & sessions, Office + mission + agent, Usage, Settings, Landing.
-Values in square brackets (`[sum]`, `[project-a]`) are placeholders for runtime data — no metric on the canvas is invented.
+Values in square brackets (`[sum]`, `[project-a]`) are placeholders for runtime data; no metric on the canvas is invented.
 
 ## Brand
 
 - Name: Noburi. Tagline: "Your agents, at work."
 - Mark: companion face with Mint sprout and Honey shell. Sources in `assets/brand/source/`:
-  - `noburi-app-icon.svg` — 1024 px master, Night rounded square background.
-  - `noburi-logo-horizontal-dark-transparent.svg` — for dark surfaces (from Drive).
-  - `noburi-logo-horizontal-light-transparent.svg` — derived: wordmark fill switched to Night for light surfaces.
+  - `noburi-app-icon.svg`: 1024 px master, Night rounded square background.
+  - `noburi-logo-horizontal-dark-transparent.svg`: for dark surfaces (from Drive).
+  - `noburi-logo-horizontal-light-transparent.svg`: derived: wordmark fill switched to Night for light surfaces.
     Tagline stays Mint; check its contrast on light backgrounds before using it on the landing.
-- Exports (PNG 16–1024, ICO, ICNS, favicons, OG) are not generated yet — `scripts/build-icons.mjs` is still to write (AC-27).
+- Exports (PNG 16–1024, ICO, ICNS, favicons, OG) are not generated yet: `scripts/build-icons.mjs` is still to write (AC-27).
   Inkscape is available on the dev machine; ImageMagick/rsvg are not.
 
 ## Tokens
@@ -47,15 +47,15 @@ All three are SIL OFL; bundle via `@fontsource` packages, check licence files be
 
 Every state has a text label; colour is never the only signal.
 
-| State            | Badge                                              |
-| ---------------- | -------------------------------------------------- |
-| IDLE             | outline, muted                                     |
-| THINKING         | outline, focus blue                                |
-| WORKING          | filled Mint                                        |
-| WAITING APPROVAL | filled Honey, bold — always visible above the fold |
-| SUCCEEDED        | outline Mint                                       |
-| FAILED           | outline Error                                      |
-| INTERRUPTED      | dashed outline                                     |
+| State            | Badge                                             |
+| ---------------- | ------------------------------------------------- |
+| IDLE             | outline, muted                                    |
+| THINKING         | outline, focus blue                               |
+| WORKING          | filled Mint                                       |
+| WAITING APPROVAL | filled Honey, bold, always visible above the fold |
+| SUCCEEDED        | outline Mint                                      |
+| FAILED           | outline Error                                     |
+| INTERRUPTED      | dashed outline                                    |
 
 ## Rules
 
@@ -75,7 +75,7 @@ Feedback: v1 felt scattered, the office was not real pixel art, SVGL logos were 
   companion (developer / researcher / reviewer colourways) with six states each:
   `assets/avatars/official/<name>/<state>.svg`. Desks, approval and thinking bubbles in
   `assets/worlds/cozy-office/objects/`. Layer order: background → character → desk (desk hides the legs).
-- **Layout**: the Office screen is one window — top bar, icon rail, the office with its approval bar and
+- **Layout**: the Office screen is one window: top bar, icon rail, the office with its approval bar and
   mission tabs as one surface, and a docked agent panel. Fewer borders, one surface tone per level.
 - **Provider logos**: Claude, Anthropic, Gemini and OpenAI from SVGL, bundled in `assets/vendor/svgl/` with
   `PROVENANCE.md`. Never fetched at runtime.
