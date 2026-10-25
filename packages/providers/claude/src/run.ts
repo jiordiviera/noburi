@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { query, type PermissionResult, type SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import type { AgentEnvironment } from "@noburi/core";
 import { sdkEnvironmentOptions } from "./environment.ts";
-import { summarizeToolInput } from "./transcript.ts";
+import { describeToolInput, summarizeToolInput } from "./transcript.ts";
 
 /** Tools that only read the workspace; everything else waits for an explicit human decision. */
 export const READ_ONLY_TOOLS: ReadonlySet<string> = new Set([
@@ -18,6 +18,8 @@ export interface ApprovalRequest {
   approvalId: string;
   toolName: string;
   summary: string;
+  /** The full command or edit, so the player can read what they approve. */
+  detail: string;
   blockedPath: string | null;
 }
 
@@ -188,6 +190,7 @@ export async function* runClaude(options: ClaudeRunOptions): AsyncGenerator<RunE
       approvalId: randomUUID(),
       toolName,
       summary: summarizeToolInput(toolName, input),
+      detail: describeToolInput(toolName, input),
       blockedPath: ctx.blockedPath ?? null,
     });
     return approved

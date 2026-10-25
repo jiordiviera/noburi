@@ -25,6 +25,8 @@ export interface MissionRow {
   budgetTokens: number | null;
   /** What this mission's agents inherit from the user's Claude Code setup. */
   environment: AgentEnvironment;
+  /** The GitHub issue this mission works on, as "owner/name#number". */
+  issueRef: string | null;
 }
 
 export interface TaskRow {
@@ -199,6 +201,8 @@ export class Store {
       this.#db.exec("alter table missions add column budget_tokens integer");
     if (!columns.includes("agent_env"))
       this.#db.exec("alter table missions add column agent_env text");
+    if (!columns.includes("issue_ref"))
+      this.#db.exec("alter table missions add column issue_ref text");
   }
 
   createMission(input: {
@@ -207,6 +211,7 @@ export class Store {
     objective: string;
     budgetTokens?: number | null | undefined;
     environment?: AgentEnvironment | undefined;
+    issueRef?: string | undefined;
   }): MissionRow {
     const mission: MissionRow = {
       id: randomUUID(),
@@ -219,10 +224,11 @@ export class Store {
       finishedAt: null,
       budgetTokens: input.budgetTokens ?? null,
       environment: input.environment ?? DEFAULT_ENVIRONMENT,
+      issueRef: input.issueRef ?? null,
     };
     this.#db
       .prepare(
-        "insert into missions (id, workspace_path, title, objective, status, created_at, budget_tokens, agent_env) values (?, ?, ?, ?, ?, ?, ?, ?)",
+        "insert into missions (id, workspace_path, title, objective, status, created_at, budget_tokens, agent_env, issue_ref) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       )
       .run(
         mission.id,
@@ -233,6 +239,7 @@ export class Store {
         mission.createdAt,
         mission.budgetTokens,
         JSON.stringify(mission.environment),
+        mission.issueRef,
       );
     return mission;
   }
@@ -249,6 +256,7 @@ export class Store {
       finishedAt: maybe(row["finished_at"]),
       budgetTokens: typeof row["budget_tokens"] === "number" ? row["budget_tokens"] : null,
       environment: environmentOf(row["agent_env"]),
+      issueRef: maybe(row["issue_ref"]),
     };
   }
 

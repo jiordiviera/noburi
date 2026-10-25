@@ -1,6 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { findClaudeExecutable, runClaude, sdkSessionSource } from "@noburi/provider-claude";
+import { dirname, join } from "node:path";
 import { createApi } from "./api.ts";
+import { GitHubForge, nodeExec } from "./forge.ts";
 import { loginShellPath, mergePaths } from "./shellPath.ts";
 import { MissionService } from "./missions.ts";
 import { RunManager } from "./runs.ts";
@@ -14,7 +16,8 @@ const allowedOrigins = (
   "http://localhost:1420,tauri://localhost,http://tauri.localhost"
 ).split(",");
 
-const store = new Store(process.env.NOBURI_DB ?? defaultDatabasePath());
+const databasePath = process.env.NOBURI_DB ?? defaultDatabasePath();
+const store = new Store(databasePath);
 // Nothing survives a restart as "running": interrupted work is shown as such, never resumed silently.
 store.reconcileAfterRestart();
 // Packaged builds do not ship the SDK's Claude binary: they run the user's installed Claude Code CLI.
@@ -34,7 +37,9 @@ const runs = new RunManager((options) =>
   runClaude({ ...options, ...(claudeExecutable ? { executable: claudeExecutable } : {}) }),
 );
 const missions = { service: new MissionService(store, runs), store };
-const api = createApi({ sessions: sdkSessionSource, runs, missions });
+// Repositories agents work on are cloned next to the database, never into the user's own folders.
+const forge = new GitHubForge(nodeExec, join(dirname(databasePath), "workspaces"));
+const api = createApi({ sessions: sdkSessionSource, runs, missions, forge });
 const server = createRuntimeServer({ token, allowedOrigins, api });
 const boundPort = await listenLoopback(server, port);
 

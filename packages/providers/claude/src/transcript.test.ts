@@ -1,7 +1,12 @@
 import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import { describe, expect, it } from "vite-plus/test";
 import { mapSdkMessage } from "./run.ts";
-import { normalizeTranscript, summarizeToolInput, type RawSessionMessage } from "./transcript.ts";
+import {
+  describeToolInput,
+  normalizeTranscript,
+  summarizeToolInput,
+  type RawSessionMessage,
+} from "./transcript.ts";
 
 describe("normalizeTranscript", () => {
   const messages: RawSessionMessage[] = [
@@ -164,5 +169,15 @@ describe("mapSdkMessage", () => {
       message: { content: [{ type: "text", text: "inner" }] },
     } as unknown as SDKMessage;
     expect(mapSdkMessage(sub)).toEqual([]);
+  });
+});
+
+describe("describeToolInput", () => {
+  it("keeps the whole command and the exact text an edit replaces", () => {
+    const long = `git commit -m "${"x".repeat(300)}" && git push`;
+    expect(describeToolInput("Bash", { command: long })).toBe(long);
+    expect(
+      describeToolInput("Edit", { file_path: "/w/a.js", old_string: "a\nb", new_string: "c" }),
+    ).toBe("/w/a.js\n\n- a\n- b\n+ c");
   });
 });

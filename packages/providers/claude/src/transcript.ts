@@ -57,6 +57,29 @@ export function summarizeToolInput(name: string, input: unknown): string {
   return name;
 }
 
+const MAX_DETAIL = 8000;
+
+/**
+ * Everything the player needs to judge a tool call before approving it: the whole command, or the
+ * file and the exact text an edit replaces. The one-line summary is for lists; this is for decisions.
+ */
+export function describeToolInput(name: string, input: unknown): string {
+  if (!isRecord(input)) return name;
+  const command = str(input["command"]);
+  if (command) return clip(command, MAX_DETAIL);
+  const path = str(input["file_path"]) ?? str(input["path"]);
+  const oldText = str(input["old_string"]);
+  const newText = str(input["new_string"]);
+  if (path && oldText !== null && newText !== null)
+    return clip(
+      `${path}\n\n- ${oldText.split("\n").join("\n- ")}\n+ ${newText.split("\n").join("\n+ ")}`,
+      MAX_DETAIL,
+    );
+  const content = str(input["content"]);
+  if (path && content !== null) return clip(`${path}\n\n${content}`, MAX_DETAIL);
+  return clip(JSON.stringify(input, null, 2), MAX_DETAIL);
+}
+
 function resultText(content: unknown): string {
   if (typeof content === "string") return content;
   if (!Array.isArray(content)) return "";

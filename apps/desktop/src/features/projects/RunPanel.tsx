@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { RunStatus } from "@/lib/runtime";
 import { cn } from "@/lib/utils";
 import type { RunState } from "./useRun";
+import { ApprovalDetail } from "@/components/ApprovalDetail";
 
 const STATUS: Record<RunStatus, { label: string; className: string }> = {
   running: { label: "Running", className: "bg-success/15 text-success" },
@@ -92,10 +93,18 @@ export function RunPanel({ run, onDecide, onCancel }: Props) {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">Claude wants to use {event.toolName}</div>
-                    <code className="block truncate font-mono text-xs text-muted-foreground">
-                      {event.summary}
-                      {event.blockedPath ? ` · outside the project: ${event.blockedPath}` : ""}
-                    </code>
+                    {pending ? (
+                      <ApprovalDetail detail={event.detail} summary={event.summary} />
+                    ) : (
+                      <code className="block truncate font-mono text-xs text-muted-foreground">
+                        {event.summary}
+                      </code>
+                    )}
+                    {event.blockedPath && (
+                      <p className="text-xs text-warning">
+                        Outside the project: {event.blockedPath}
+                      </p>
+                    )}
                   </div>
                   {pending ? (
                     <>

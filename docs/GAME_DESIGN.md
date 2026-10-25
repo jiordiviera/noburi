@@ -1,4 +1,4 @@
-# Noburi — game design
+# Noburi: game design
 
 Noburi is a management game where you are the project lead and your staff are real Claude Code agents.
 Like a studio tycoon game, except the work done in the game is real: real issues, real branches, real pull

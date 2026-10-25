@@ -20,6 +20,7 @@ import { EnvironmentPicker, PRESET_LABEL } from "./EnvironmentPicker";
 import { PlanEditor } from "./PlanEditor";
 import { MISSION_STATUS, TASK_STATUS } from "./status";
 import { useMission } from "./useMission";
+import { ApprovalDetail } from "@/components/ApprovalDetail";
 
 interface Props {
   missionId: string;
@@ -246,9 +247,10 @@ export function MissionDetail({ missionId, agents, onChanged, onDeleted }: Props
                       {agentName(tasks.find((t) => t.id === e.taskId)?.agentId ?? "")} wants to use{" "}
                       {str(e.payload["toolName"])}
                     </div>
-                    <code className="block truncate font-mono text-xs text-muted-foreground">
-                      {str(e.payload["summary"])}
-                    </code>
+                    <ApprovalDetail
+                      detail={str(e.payload["detail"])}
+                      summary={str(e.payload["summary"])}
+                    />
                   </div>
                   <Button
                     variant="outline"

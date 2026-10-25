@@ -108,6 +108,7 @@ export class MissionService {
     title?: string | undefined;
     budgetTokens?: number | undefined;
     environment?: AgentEnvironment | undefined;
+    issueRef?: string | undefined;
   }): MissionView {
     const title =
       input.title?.trim() || input.objective.trim().split("\n")[0]?.slice(0, 80) || "Mission";
@@ -117,6 +118,7 @@ export class MissionService {
       objective: input.objective.trim(),
       budgetTokens: input.budgetTokens,
       environment: input.environment,
+      issueRef: input.issueRef,
     });
     // A starting point the user reviews and edits; nothing runs until they start the mission.
     this.store.replacePlan(mission.id, [
@@ -328,6 +330,7 @@ export class MissionService {
             approvalId: event.approvalId,
             toolName: event.toolName,
             summary: event.summary,
+            detail: event.detail,
             blockedPath: event.blockedPath,
           },
           id,

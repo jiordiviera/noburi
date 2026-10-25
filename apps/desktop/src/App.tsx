@@ -3,8 +3,10 @@ import {
   ChartBarIcon,
   Cog6ToothIcon,
   FolderIcon,
+  HomeModernIcon,
   RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
+import { GamePage } from "@/features/game/GamePage";
 import { MissionsPage } from "@/features/missions/MissionsPage";
 import { UsagePage } from "@/features/usage/UsagePage";
 import { ProjectsPage } from "@/features/projects/ProjectsPage";
@@ -12,9 +14,10 @@ import { AppearanceSettings } from "@/features/settings/AppearanceSettings";
 import { useAppearance } from "@/features/settings/useAppearance";
 import { cn } from "@/lib/utils";
 
-type Page = "projects" | "missions" | "usage" | "settings";
+type Page = "office" | "projects" | "missions" | "usage" | "settings";
 
 const NAV: { id: Page; label: string; Icon: typeof FolderIcon }[] = [
+  { id: "office", label: "Office", Icon: HomeModernIcon },
   { id: "projects", label: "Projects", Icon: FolderIcon },
   { id: "missions", label: "Missions", Icon: RocketLaunchIcon },
   { id: "usage", label: "Usage", Icon: ChartBarIcon },
@@ -22,7 +25,7 @@ const NAV: { id: Page; label: string; Icon: typeof FolderIcon }[] = [
 ];
 
 export function App() {
-  const [page, setPage] = useState<Page>("projects");
+  const [page, setPage] = useState<Page>("office");
   const { appearance, update, selectTheme, reset } = useAppearance();
 
   return (
@@ -52,7 +55,9 @@ export function App() {
             </button>
           ))}
         </nav>
-        {page === "projects" ? (
+        {page === "office" ? (
+          <GamePage />
+        ) : page === "projects" ? (
           <ProjectsPage />
         ) : page === "missions" ? (
           <MissionsPage />
