@@ -2,7 +2,9 @@
 export type TranscriptPart =
   | { kind: "text"; text: string }
   | { kind: "tool_use"; toolUseId: string; name: string; summary: string }
-  | { kind: "tool_result"; toolUseId: string; text: string; isError: boolean };
+  | { kind: "tool_result"; toolUseId: string; text: string; isError: boolean }
+  /** Claude Code's summary of the messages it compacted away. */
+  | { kind: "summary"; text: string };
 
 export interface TranscriptEntry {
   id: string;
@@ -20,6 +22,10 @@ export interface RawSessionMessage {
   uuid: string;
   message: unknown;
   parent_tool_use_id: string | null;
+  /** Set on the summary Claude Code writes when it compacts a conversation. */
+  isCompactSummary?: boolean;
+  /** Set on context Claude Code injects as a user message (skill bodies, caveats, the summary). */
+  is_meta?: boolean;
 }
 
 const MAX_TEXT = 4000;
@@ -66,9 +72,30 @@ function resultText(content: unknown): string {
     .join("\n");
 }
 
-function toParts(content: unknown): TranscriptPart[] {
-  if (typeof content === "string")
-    return content.trim() ? [{ kind: "text", text: clip(content, MAX_TEXT) }] : [];
+/**
+ * Removes what Claude Code adds around a person's words before sending them to the model:
+ * reminders, artifact context, and the markup of slash commands.
+ */
+export function stripInjected(text: string): string {
+  return text
+    .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/g, "")
+    .replace(/<artifact-view-context[^>]*>[\s\S]*?<\/artifact-view-context>/g, "")
+    .replace(/<artifact-content-authored-by-others\/>/g, "")
+    .replace(/<command-message>[\s\S]*?<\/command-message>/g, "")
+    .replace(/<command-name>([\s\S]*?)<\/command-name>/g, "$1")
+    .replace(/\s*<command-args>([\s\S]*?)<\/command-args>/g, (_, args: string) =>
+      args.trim() ? ` ${args.trim()}` : "",
+    )
+    .trim();
+}
+
+function textPart(text: string, role: RawSessionMessage["type"]): TranscriptPart[] {
+  const shown = role === "user" ? stripInjected(text) : text;
+  return shown.trim() ? [{ kind: "text", text: clip(shown, MAX_TEXT) }] : [];
+}
+
+function toParts(content: unknown, role: RawSessionMessage["type"]): TranscriptPart[] {
+  if (typeof content === "string") return textPart(content, role);
   if (!Array.isArray(content)) return [];
   const parts: TranscriptPart[] = [];
   for (const block of content) {
@@ -76,7 +103,7 @@ function toParts(content: unknown): TranscriptPart[] {
     const type = block["type"];
     if (type === "text") {
       const text = str(block["text"]);
-      if (text?.trim()) parts.push({ kind: "text", text: clip(text, MAX_TEXT) });
+      if (text) parts.push(...textPart(text, role));
     } else if (type === "tool_use") {
       const name = str(block["name"]) ?? "tool";
       parts.push({
@@ -109,11 +136,27 @@ export function normalizeTranscript(messages: readonly RawSessionMessage[]): Tra
 
   for (const m of messages) {
     const content = isRecord(m.message) ? m.message["content"] : undefined;
-    const parts = toParts(content);
-    if (parts.length === 0) continue;
     const raw: unknown = m;
     const timestamp = isRecord(raw) ? str(raw["timestamp"]) : null;
     const fromSubagent = m.parent_tool_use_id !== null;
+
+    // Neither is something the person typed: the summary gets its own collapsed entry, other
+    // injected context is left out.
+    if (m.isCompactSummary) {
+      const text = typeof content === "string" ? content : resultText(content);
+      entries.push({
+        id: m.uuid,
+        role: "system",
+        timestamp,
+        fromSubagent,
+        parts: [{ kind: "summary", text: clip(stripInjected(text), MAX_TEXT) }],
+      });
+      continue;
+    }
+    if (m.is_meta) continue;
+
+    const parts = toParts(content, m.type);
+    if (parts.length === 0) continue;
 
     const onlyResults = parts.every((p) => p.kind === "tool_result");
     if (m.type === "user" && onlyResults) {
