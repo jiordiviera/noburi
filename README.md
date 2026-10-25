@@ -27,6 +27,15 @@ pnpm dev         # same UI in a browser at http://localhost:1420, with the runti
 pnpm dev:runtime # runtime alone: local API on 127.0.0.1, prints its port and session token
 ```
 
+## Build the Linux package
+
+```bash
+pnpm package:linux
+```
+
+Produces a `.deb` and an AppImage in `apps/desktop/src-tauri/target/release/bundle/`. Node.js is bundled; the
+Claude Code CLI is not: install it and sign in first (`claude` must be on your PATH or in `~/.local/bin`).
+
 ## Layout
 
 ```

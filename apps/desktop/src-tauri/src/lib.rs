@@ -29,13 +29,32 @@ struct Runtime {
     ready: ReadySlot,
 }
 
-/// Starts the runtime from the workspace. Packaged builds will ship it as a bundled sidecar instead.
-fn spawn_runtime() -> std::io::Result<Child> {
-    let workspace = concat!(env!("CARGO_MANIFEST_DIR"), "/../../..");
-    let mut command = Command::new("pnpm");
+/// Starts the runtime. Development runs it from the workspace with pnpm; packaged builds run the
+/// bundled Node binary on the bundled runtime (see scripts/bundle-runtime.mjs).
+fn spawn_runtime(app: &tauri::AppHandle) -> std::io::Result<Child> {
+    let mut command = if cfg!(debug_assertions) {
+        let workspace = concat!(env!("CARGO_MANIFEST_DIR"), "/../../..");
+        let mut command = Command::new("pnpm");
+        command
+            .args(["--filter", "@noburi/runtime", "start"])
+            .current_dir(workspace);
+        command
+    } else {
+        let dir = app
+            .path()
+            .resource_dir()
+            .map_err(|error| std::io::Error::other(error.to_string()))?
+            .join("runtime");
+        let mut command = Command::new(dir.join("node"));
+        command
+            // node:sqlite still prints an experimental warning on every start.
+            .arg("--disable-warning=ExperimentalWarning")
+            .arg(dir.join("runtime.mjs"))
+            // Use the user's installed Claude Code CLI: the SDK's own binary is not bundled.
+            .env("NOBURI_PACKAGED", "1");
+        command
+    };
     command
-        .args(["--filter", "@noburi/runtime", "start"])
-        .current_dir(workspace)
         .env("NOBURI_ALLOWED_ORIGINS", ALLOWED_ORIGINS)
         // The runtime exits when this pipe closes, so a crashed shell never leaves it running.
         .env("NOBURI_EXIT_ON_STDIN_CLOSE", "1")
@@ -45,7 +64,7 @@ fn spawn_runtime() -> std::io::Result<Child> {
     #[cfg(unix)]
     {
         use std::os::unix::process::CommandExt;
-        // Own process group, so stopping it also stops pnpm's children.
+        // Own process group, so stopping it also stops its children.
         command.process_group(0);
     }
     command.spawn()
@@ -140,7 +159,7 @@ pub fn run() {
                 )?;
             }
             let ready: ReadySlot = Arc::new((Mutex::new(None), Condvar::new()));
-            let child = match spawn_runtime() {
+            let child = match spawn_runtime(app.handle()) {
                 Ok(mut child) => {
                     watch_stdout(&mut child, ready.clone());
                     Some(child)

@@ -64,6 +64,8 @@ export interface ClaudeRunOptions {
   /** Continue into a new session id, leaving the original transcript untouched. */
   fork?: boolean | undefined;
   model?: string | undefined;
+  /** Claude Code CLI to run; when unset the SDK uses the binary it ships in node_modules. */
+  executable?: string | undefined;
   signal: AbortSignal;
   requestApproval: (request: ApprovalRequest) => Promise<boolean>;
 }
@@ -200,6 +202,7 @@ export async function* runClaude(options: ClaudeRunOptions): AsyncGenerator<RunE
         ...(options.resumeSessionId ? { resume: options.resumeSessionId } : {}),
         ...(options.fork ? { forkSession: true } : {}),
         ...(options.model ? { model: options.model } : {}),
+        ...(options.executable ? { pathToClaudeCodeExecutable: options.executable } : {}),
       },
     });
     for await (const message of stream) {

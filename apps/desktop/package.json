@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "package": "tauri build --config src-tauri/tauri.bundle.json"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
