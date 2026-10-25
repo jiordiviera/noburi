@@ -58,6 +58,7 @@ export interface Mission {
   createdAt: string;
   startedAt: string | null;
   finishedAt: string | null;
+  budgetTokens: number | null;
 }
 
 export interface MissionTask {
@@ -103,6 +104,29 @@ export interface PlanTask {
   instructions: string;
   agentId: string;
   dependsOn: number[];
+}
+
+export interface UsageLine {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  runs: number;
+  costUsdEstimated: number;
+}
+
+export interface UsageSummary {
+  totals: UsageLine;
+  byAgentModel: (UsageLine & { agentId: string; model: string })[];
+  missions: (UsageLine & {
+    missionId: string;
+    title: string;
+    status: MissionStatus;
+    createdAt: string;
+    budgetTokens: number | null;
+  })[];
+  sources: string[];
+  apiKeySources: string[];
 }
 
 export class RuntimeError extends Error {
@@ -197,8 +221,13 @@ export const runtime = {
   agents: () => call<{ agents: Agent[] }>("/agents"),
   missions: () => call<{ missions: MissionView[] }>("/missions"),
   mission: (id: string) => call<MissionView & { artifacts: MissionArtifact[] }>(`/missions/${id}`),
-  createMission: (body: { workspacePath: string; objective: string; title?: string }) =>
-    call<MissionView>("/missions", { method: "POST", body: JSON.stringify(body) }),
+  usage: () => call<UsageSummary>("/usage"),
+  createMission: (body: {
+    workspacePath: string;
+    objective: string;
+    title?: string;
+    budgetTokens?: number;
+  }) => call<MissionView>("/missions", { method: "POST", body: JSON.stringify(body) }),
   setPlan: (id: string, tasks: PlanTask[]) =>
     call<MissionView>(`/missions/${id}/plan`, { method: "PUT", body: JSON.stringify({ tasks }) }),
   startMission: (id: string) => call<MissionView>(`/missions/${id}/start`, { method: "POST" }),

@@ -170,6 +170,7 @@ function NewMission({
 }) {
   const [workspacePath, setWorkspacePath] = useState(folders[0] ?? "");
   const [objective, setObjective] = useState("");
+  const [budget, setBudget] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -177,7 +178,12 @@ function NewMission({
     setBusy(true);
     setError(null);
     try {
-      const view = await runtime.createMission({ workspacePath: workspacePath.trim(), objective });
+      const budgetTokens = Number.parseInt(budget.replaceAll(/[\s,_]/g, ""), 10);
+      const view = await runtime.createMission({
+        workspacePath: workspacePath.trim(),
+        objective,
+        ...(Number.isFinite(budgetTokens) && budgetTokens > 0 ? { budgetTokens } : {}),
+      });
       onCreated(view.mission.id);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -240,6 +246,21 @@ function NewMission({
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="mission-budget">Token budget (optional)</Label>
+          <Input
+            id="mission-budget"
+            inputMode="numeric"
+            className="w-48 font-mono"
+            placeholder="e.g. 500000"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            All tokens Claude processes count, cache reads included. Checked before each task: once
+            reached, no new task starts; a task already running is not cut off.
+          </p>
         </div>
         <Button
           className="self-start"

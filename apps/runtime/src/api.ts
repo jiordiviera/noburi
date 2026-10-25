@@ -14,6 +14,7 @@ import { AGENTS, agentById } from "./agents.ts";
 import { MissionError, type MissionService } from "./missions.ts";
 import type { RunManager } from "./runs.ts";
 import type { Store } from "./store.ts";
+import { usageSummary } from "./usage.ts";
 
 export interface ApiDeps {
   sessions: SessionSource;
@@ -79,6 +80,8 @@ const CreateMissionBody = z.strictObject({
   workspacePath: z.string().min(1),
   objective: z.string().trim().min(1).max(4000),
   title: z.string().trim().max(120).optional(),
+  /** Optional cap on processed tokens; checked before each task starts. */
+  budgetTokens: z.number().int().positive().max(1_000_000_000).optional(),
 });
 
 const PlanBody = z
@@ -181,6 +184,11 @@ export function createApi(deps: ApiDeps): ApiHandler {
 
     if (method === "GET" && url.pathname === "/agents") {
       json(res, 200, { agents: AGENTS });
+      return true;
+    }
+
+    if (method === "GET" && url.pathname === "/usage" && deps.missions) {
+      json(res, 200, usageSummary(deps.missions.store));
       return true;
     }
 
