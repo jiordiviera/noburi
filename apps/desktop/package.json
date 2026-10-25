@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "vp build"
+    "build": "vp build",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
@@ -24,6 +25,7 @@
     "@heroicons/react": "2.2.0",
     "@noburi/core": "workspace:*",
     "@noburi/ui": "workspace:*",
+    "@tauri-apps/api": "2.12.4",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
     "lucide-react": "^1.61.0",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@noburi/provider-claude": "workspace:*",
     "@tailwindcss/vite": "4.3.3",
+    "@tauri-apps/cli": "2.12.4",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",

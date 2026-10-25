@@ -9,6 +9,11 @@
 ## Develop
 
 Requirements: Node 22+, pnpm 12. The toolchain is [Vite+](https://viteplus.dev) (`vp`), installed as a dev dependency.
+The desktop window also needs Rust (stable) and, on Debian/Ubuntu, the Tauri system libraries:
+
+```bash
+sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+```
 
 ```bash
 pnpm install
@@ -16,14 +21,15 @@ pnpm check       # format, lint and type-check in one pass (vp check)
 pnpm fix         # format and apply safe lint fixes
 pnpm test        # unit tests (vp test)
 pnpm build
-pnpm dev         # runtime + desktop UI together, wired with a fresh session token
+pnpm desktop     # desktop app (Tauri): opens the window and starts the runtime itself
+pnpm dev         # same UI in a browser at http://localhost:1420, with the runtime
 pnpm dev:runtime # runtime alone: local API on 127.0.0.1, prints its port and session token
 ```
 
 ## Layout
 
 ```
-apps/desktop      React + shadcn/ui desktop UI (Tauri shell to come)
+apps/desktop      React + shadcn/ui UI, Tauri 2 shell in src-tauri/
 apps/runtime      local orchestration API (loopback only, token-protected)
 packages/core     domain schemas, task state machine, event schema
 packages/ui       Cozy Pixel tokens, themes and appearance settings

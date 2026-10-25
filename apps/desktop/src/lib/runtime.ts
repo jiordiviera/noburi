@@ -1,3 +1,4 @@
+import { invoke, isTauri } from "@tauri-apps/api/core";
 import type { ProjectSummary, RunEvent, TranscriptEntry } from "@noburi/provider-claude";
 
 export type { ProjectSummary, RunEvent, TranscriptEntry };
@@ -33,21 +34,42 @@ export class RuntimeError extends Error {
   }
 }
 
-const BASE = import.meta.env.VITE_NOBURI_RUNTIME_URL;
-const TOKEN = import.meta.env.VITE_NOBURI_RUNTIME_TOKEN;
+interface Connection {
+  url: string;
+  token: string;
+}
 
-export const runtimeConfigured = Boolean(BASE && TOKEN);
+const ENV_URL = import.meta.env.VITE_NOBURI_RUNTIME_URL;
+const ENV_TOKEN = import.meta.env.VITE_NOBURI_RUNTIME_TOKEN;
+const IN_TAURI = isTauri();
 
-function headers(): HeadersInit {
-  return { authorization: `Bearer ${TOKEN ?? ""}`, "content-type": "application/json" };
+/** True when a runtime can be reached: inside the desktop shell, or via `pnpm dev` in a browser. */
+export const runtimeConfigured = IN_TAURI || Boolean(ENV_URL && ENV_TOKEN);
+
+let connection: Promise<Connection> | null = null;
+
+/** The desktop shell starts the runtime and hands over its address and token; the browser dev setup uses env. */
+function connect(): Promise<Connection> {
+  connection ??= IN_TAURI
+    ? invoke<Connection>("runtime_info").catch((error: unknown) => {
+        connection = null;
+        throw new RuntimeError(0, String(error), "no_runtime");
+      })
+    : Promise.resolve({ url: ENV_URL ?? "", token: ENV_TOKEN ?? "" });
+  return connection;
+}
+
+function headers(token: string): HeadersInit {
+  return { authorization: `Bearer ${token}`, "content-type": "application/json" };
 }
 
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!runtimeConfigured)
     throw new RuntimeError(0, "The Noburi runtime is not running.", "no_runtime");
+  const { url, token } = await connect();
   let res: Response;
   try {
-    res = await fetch(`${BASE}${path}`, { ...init, headers: headers() });
+    res = await fetch(`${url}${path}`, { ...init, headers: headers(token) });
   } catch {
     throw new RuntimeError(0, "Cannot reach the Noburi runtime.", "unreachable");
   }
@@ -93,7 +115,11 @@ export const runtime = {
     onRecord: (record: RunRecord) => void,
     signal: AbortSignal,
   ): Promise<void> {
-    const res = await fetch(`${BASE}/runs/${runId}/events?after=0`, { headers: headers(), signal });
+    const { url, token } = await connect();
+    const res = await fetch(`${url}/runs/${runId}/events?after=0`, {
+      headers: headers(token),
+      signal,
+    });
     if (!res.ok || !res.body)
       throw new RuntimeError(res.status, "Cannot open the run stream.", null);
     const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
