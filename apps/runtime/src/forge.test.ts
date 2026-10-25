@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 import type { ClaudeRunOptions, RunEvent, SessionSource } from "@noburi/provider-claude";
 import { createApi } from "./api.ts";
-import { GitHubForge, issueInstructions, type Exec } from "./forge.ts";
+import { engineStatus, forgeStatus, GitHubForge, issueInstructions, type Exec } from "./forge.ts";
 import { MissionService } from "./missions.ts";
 import { RunManager } from "./runs.ts";
 import { createRuntimeServer, listenLoopback } from "./server.ts";
@@ -139,5 +139,59 @@ describe("work on an issue", () => {
     expect(again.status).toBe(409);
     expect((await read(again)).code).toBe("already_working");
     release();
+  });
+});
+
+/** gh answering for one pull request. */
+const prExec: Exec = async (_command, args) => {
+  if (args[1] === "diff") return "diff --git a/todo.js b/todo.js\n+fixed\n";
+  return JSON.stringify({
+    number: 5,
+    title: "Fix remaining()",
+    body: "Closes #1",
+    url: "https://github.com/o/r/pull/5",
+    state: "OPEN",
+    headRefName: "noburi/issue-1",
+    additions: 8,
+    deletions: 1,
+    changedFiles: 2,
+    statusCheckRollup: [
+      { name: "test", status: "COMPLETED", conclusion: "SUCCESS" },
+      { name: "lint", status: "IN_PROGRESS", conclusion: null },
+      { context: "ci/old", state: "FAILURE" },
+    ],
+  });
+};
+
+/** Only gh is installed, signed in as octocat. */
+const cliExec: Exec = async (command, args) => {
+  if (command === "gh" && args[0] === "api") return "octocat\n";
+  if (command === "gh") return "gh version 2";
+  throw new Error("not found");
+};
+
+describe("pull requests and connections", () => {
+  it("reads a pull request with its checks and the start of its diff", async () => {
+    const pr = await new GitHubForge(prExec, tmpdir()).pullRequest("o/r", 5);
+    expect(pr.branch).toBe("noburi/issue-1");
+    expect(pr.checks).toEqual([
+      { name: "test", state: "pass" },
+      { name: "lint", state: "pending" },
+      { name: "ci/old", state: "fail" },
+    ]);
+    expect(pr.diff).toContain("+fixed");
+  });
+
+  it("reports which CLIs are installed and who gh is signed in as", async () => {
+    expect(await forgeStatus(cliExec)).toEqual({
+      github: { installed: true, account: "octocat" },
+      gitlab: { installed: false, account: null },
+    });
+    const engines = await engineStatus(cliExec, "/home/u/.local/bin/claude");
+    expect(engines.map((e) => [e.id, e.installed, e.supported])).toEqual([
+      ["claude", true, true],
+      ["codex", false, false],
+      ["gemini", false, false],
+    ]);
   });
 });

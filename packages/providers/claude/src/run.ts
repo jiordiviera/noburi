@@ -42,7 +42,14 @@ export type RunEvent =
     }
   | { type: "state"; state: "idle" | "running" | "requires_action" }
   | { type: "text"; text: string }
-  | { type: "tool.started"; toolUseId: string; name: string; summary: string }
+  | {
+      type: "tool.started";
+      toolUseId: string;
+      name: string;
+      summary: string;
+      /** The whole command or edit, for views that must match on it (the quest log). */
+      detail: string;
+    }
   | { type: "tool.completed"; toolUseId: string; isError: boolean; text: string }
   | ({ type: "approval.requested" } & ApprovalRequest)
   | { type: "approval.resolved"; approvalId: string; approved: boolean }
@@ -107,6 +114,7 @@ export function mapSdkMessage(message: SDKMessage): RunEvent[] {
             toolUseId: block.id,
             name: block.name,
             summary: summarizeToolInput(block.name, block.input),
+            detail: describeToolInput(block.name, block.input),
           });
         }
       }

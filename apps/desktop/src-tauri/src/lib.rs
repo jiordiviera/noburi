@@ -150,6 +150,8 @@ fn runtime_info(runtime: State<'_, Runtime>) -> Result<RuntimeInfo, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
+        // Opens pull requests and docs in the user's browser; http(s) only, see capabilities.
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

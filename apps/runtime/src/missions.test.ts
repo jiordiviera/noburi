@@ -37,7 +37,13 @@ function fakeClaude(prompts: string[]) {
       permissionMode: "default",
       apiKeySource: "none",
     };
-    yield { type: "tool.started", toolUseId: "t", name: "Read", summary: "README.md" };
+    yield {
+      type: "tool.started",
+      toolUseId: "t",
+      name: "Read",
+      summary: "README.md",
+      detail: "README.md",
+    };
     if (script === "approve") {
       const ok = await options.requestApproval({
         approvalId: "a1",

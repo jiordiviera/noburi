@@ -17,7 +17,6 @@
   scale: -1 1;
 }
 
-/* Cards and the "!" pulse, to draw the player's eye to what needs them. */
 @keyframes game-pulse {
   50% {
     translate: 0 calc(-1px * var(--nb-office-scale, 3));
@@ -28,9 +27,88 @@
   animation: game-pulse 0.8s steps(2, end) infinite;
 }
 
+@keyframes game-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.game-blink {
+  animation: game-blink 1s steps(2, end) infinite;
+}
+
+/* RPG windows: a cream (or honey) pixel frame drawn with stacked hard shadows. */
+.game-win {
+  background: #16202a;
+  box-shadow:
+    0 0 0 4px #0c131a,
+    0 0 0 8px #f6f0e5,
+    0 0 0 12px #0c131a;
+}
+
+.game-win-honey {
+  background: #101820;
+  box-shadow:
+    0 0 0 4px #0c131a,
+    0 0 0 8px #f0be79,
+    0 0 0 12px #0c131a,
+    0 12px 0 12px rgb(0 0 0 / 0.35);
+}
+
+.game-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  background: #0c131a;
+  box-shadow: 0 0 0 2px #34424e;
+  font: 700 11px var(--font-mono, monospace);
+  color: #a7b3be;
+}
+
+.game-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 18px;
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  cursor: pointer;
+  border: 0;
+}
+
+.game-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.game-btn-honey {
+  background: #f0be79;
+  color: #101820;
+  font-weight: 700;
+  box-shadow: 0 5px 0 #a9844f;
+}
+
+.game-btn-slate {
+  background: #26323d;
+  color: #f6f0e5;
+  font-weight: 600;
+  box-shadow: 0 5px 0 #0c131a;
+}
+
+.game-btn:focus-visible,
+.game-tab:focus-visible {
+  outline: 3px solid #8ec5ff;
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .game-walking,
-  .game-needs-you {
+  .game-needs-you,
+  .game-blink {
     animation: none;
   }
 }

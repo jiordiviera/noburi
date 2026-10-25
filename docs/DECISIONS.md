@@ -262,3 +262,18 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   text, approvals and the tray's contents.
 - Repository names are checked against `owner/name` before any command, and "." or ".." names are refused so a
   clone can never land outside `workspaces/`.
+
+## D20: The game shell
+
+- The app is now four game screens behind a HUD, switched with keys 1 to 4: Office, Hiring, Your desk, Studio.
+  The earlier screens (sessions, missions, usage, appearance) live on as Studio tabs.
+- Office: the quest log lists the issue's steps (branch, change, tests, commit, push, pull request, delivery). A
+  step is checked only when a matching tool call succeeded; the one an approval is about shows as waiting.
+  `tool.started` events now carry the whole command (`detail`) so long commands still match.
+- Approvals appear in an RPG dialog box with the agent's last message and the full command. Enter approves once,
+  Escape refuses, never while typing in a field.
+- Your desk reads the pull request through `gh` (`GET /forge/pull`): checks, stats, the start of the diff.
+  Merging opens GitHub in the browser through the Tauri opener plugin (2.7.0, http(s) only); Noburi never merges.
+- Studio shows what `GET /connections` finds: gh and glab, and Claude Code, Codex and Gemini CLI. Only Claude Code
+  can run agents; the others are listed as installed but not supported yet. Hiring is read-only for now.
+- Not shown on purpose until real: studio level and XP, GitHub mail, a daily budget in the HUD.
