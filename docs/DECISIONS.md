@@ -186,3 +186,17 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - The only motion is a one-pixel bob while an agent is really working; it stops with "Reduce motion" in
   Settings or the system preference.
 - Slots follow `assets/worlds/cozy-office/map.json`: Developer, Architect (reviewer sprite), Researcher.
+
+## D15 — Usage and budgets
+
+- `GET /usage` aggregates the `usage.updated` events of every mission: input, output, cache read and cache write
+  tokens exactly as the SDK `result` message reported them, by mission and by agent + model (the alias Noburi
+  asked for). Runs that never reported are absent, not zero; nothing is estimated from text.
+- The run's `apiKeySource` is recorded with its usage. `none`/`oauth` mean a Claude subscription: the screen then
+  shows no dollar figure, because plans are not billed per token. With an API key it shows the SDK's
+  `total_cost_usd` as an estimate at API prices; with mixed or unknown sources it is labelled an upper bound.
+- Optional per-mission budget, in processed tokens (all four kinds, cache reads included). Checked before each
+  task: once reached, the mission stops with `mission.cancelled { reason: "budget" }` and the remaining tasks are
+  cancelled; a call already running is never cut off. The screen warns from 80 %.
+- Schema change handled by an idempotent migration (`budget_tokens` column added if missing).
+- Not counted yet: sessions continued from Projects (their runs are not persisted).

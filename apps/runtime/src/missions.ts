@@ -4,6 +4,7 @@ import { assertTransition, type EventType, type TaskStatus } from "@noburi/core"
 import { agentById, AGENTS } from "./agents.ts";
 import type { RunManager, RunRecord } from "./runs.ts";
 import type { EventRow, MissionRow, PlannedTask, Store, TaskRow } from "./store.ts";
+import { missionUsage, processedTokens } from "./usage.ts";
 
 const run = promisify(execFile);
 
@@ -35,6 +36,7 @@ interface Active {
   unsubscribe: (() => void) | undefined;
   usage: Record<string, unknown> | null;
   failure: string | null;
+  apiKeySource: string | null;
 }
 
 export interface MissionServiceOptions {
@@ -99,6 +101,7 @@ export class MissionService {
     workspacePath: string;
     objective: string;
     title?: string | undefined;
+    budgetTokens?: number | undefined;
   }): MissionView {
     const title =
       input.title?.trim() || input.objective.trim().split("\n")[0]?.slice(0, 80) || "Mission";
@@ -106,6 +109,7 @@ export class MissionService {
       workspacePath: input.workspacePath,
       title,
       objective: input.objective.trim(),
+      budgetTokens: input.budgetTokens,
     });
     // A starting point the user reviews and edits; nothing runs until they start the mission.
     this.store.replacePlan(mission.id, [
@@ -218,6 +222,18 @@ export class MissionService {
       (t) => t.status === "PENDING" && t.dependsOn.every((id) => done.has(id)),
     );
     if (next) {
+      // The budget is checked before each task: a call already running is never cut off.
+      const used = processedTokens(missionUsage(this.store.listEvents(missionId)));
+      if (mission.budgetTokens !== null && used >= mission.budgetTokens) {
+        for (const t of tasks) if (t.status === "PENDING") this.#setTask(t, "CANCELLED");
+        this.store.setMissionStatus(missionId, "CANCELLED");
+        this.#emit(missionId, "mission.cancelled", {
+          reason: "budget",
+          usedTokens: used,
+          budgetTokens: mission.budgetTokens,
+        });
+        return;
+      }
       this.#launch(mission, next, tasks);
       return;
     }
@@ -240,6 +256,7 @@ export class MissionService {
       unsubscribe: undefined,
       usage: null,
       failure: null,
+      apiKeySource: null,
     };
     this.#active.set(mission.id, active);
     this.#emit(
@@ -264,6 +281,7 @@ export class MissionService {
     switch (event.type) {
       case "session":
         this.store.updateTask(id, { sessionId: event.sessionId });
+        active.apiKeySource = event.apiKeySource;
         break;
       case "text":
         this.#emit(missionId, "agent.message", { agentId: task.agentId, text: event.text }, id);
@@ -325,6 +343,7 @@ export class MissionService {
           ...event.usage,
           costUsdEstimated: event.costUsdEstimated,
           measurementSource: event.measurementSource,
+          apiKeySource: active.apiKeySource ?? "unknown",
         };
         this.#emit(missionId, "usage.updated", { agentId: task.agentId, ...active.usage }, id);
         if (event.ok) this.store.updateTask(id, { resultText: event.text });

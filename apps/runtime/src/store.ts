@@ -15,6 +15,8 @@ export interface MissionRow {
   createdAt: string;
   startedAt: string | null;
   finishedAt: string | null;
+  /** Optional token budget; no new task starts once the mission has used this many. */
+  budgetTokens: number | null;
 }
 
 export interface TaskRow {
@@ -140,6 +142,7 @@ export class Store {
     this.#db = new DatabaseSync(path);
     this.#db.exec("pragma journal_mode = wal; pragma foreign_keys = on;");
     this.#db.exec(SCHEMA);
+    this.#migrate();
   }
 
   close(): void {
@@ -163,18 +166,36 @@ export class Store {
     }
   }
 
-  createMission(input: { workspacePath: string; title: string; objective: string }): MissionRow {
+  /** Additive, idempotent schema changes for databases created by earlier versions. */
+  #migrate(): void {
+    const columns = this.#db
+      .prepare("pragma table_info(missions)")
+      .all()
+      .map((r) => text(r["name"]));
+    if (!columns.includes("budget_tokens"))
+      this.#db.exec("alter table missions add column budget_tokens integer");
+  }
+
+  createMission(input: {
+    workspacePath: string;
+    title: string;
+    objective: string;
+    budgetTokens?: number | null | undefined;
+  }): MissionRow {
     const mission: MissionRow = {
       id: randomUUID(),
-      ...input,
+      workspacePath: input.workspacePath,
+      title: input.title,
+      objective: input.objective,
       status: "DRAFT",
       createdAt: this.#now(),
       startedAt: null,
       finishedAt: null,
+      budgetTokens: input.budgetTokens ?? null,
     };
     this.#db
       .prepare(
-        "insert into missions (id, workspace_path, title, objective, status, created_at) values (?, ?, ?, ?, ?, ?)",
+        "insert into missions (id, workspace_path, title, objective, status, created_at, budget_tokens) values (?, ?, ?, ?, ?, ?, ?)",
       )
       .run(
         mission.id,
@@ -183,6 +204,7 @@ export class Store {
         mission.objective,
         mission.status,
         mission.createdAt,
+        mission.budgetTokens,
       );
     return mission;
   }
@@ -197,6 +219,7 @@ export class Store {
       createdAt: text(row["created_at"]),
       startedAt: maybe(row["started_at"]),
       finishedAt: maybe(row["finished_at"]),
+      budgetTokens: typeof row["budget_tokens"] === "number" ? row["budget_tokens"] : null,
     };
   }
 
