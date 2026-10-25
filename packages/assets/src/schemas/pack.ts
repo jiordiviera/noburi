@@ -4,7 +4,10 @@ import { z } from "zod";
 export const PackPngPath = z
   .string()
   .min(1)
-  .refine((p) => !p.startsWith("/") && !p.includes("\\") && !/^[a-zA-Z]:/.test(p), "must be relative")
+  .refine(
+    (p) => !p.startsWith("/") && !p.includes("\\") && !/^[a-zA-Z]:/.test(p),
+    "must be relative",
+  )
   .refine((p) => !p.split("/").includes(".."), "must not traverse")
   .refine((p) => p.toLowerCase().endsWith(".png"), "must be a .png");
 
@@ -16,9 +19,14 @@ export const PackAvatar = z.object({
   displayName: z.string().min(1).max(64),
   size: z.tuple([z.number().int().min(16).max(128), z.number().int().min(16).max(128)]),
   // Only idle is required; missing states fall back to idle.
-  states: z.object({ idle: PackPngPath }).extend(
-    Object.fromEntries(AvatarState.options.filter((s) => s !== "idle").map((s) => [s, PackPngPath.optional()])),
-  ),
+  states: z.object({
+    idle: PackPngPath,
+    thinking: PackPngPath.optional(),
+    working: PackPngPath.optional(),
+    waiting: PackPngPath.optional(),
+    done: PackPngPath.optional(),
+    error: PackPngPath.optional(),
+  }),
 });
 export type PackAvatar = z.infer<typeof PackAvatar>;
 
@@ -36,6 +44,5 @@ export const PackManifest = z.strictObject({
 export type PackManifest = z.infer<typeof PackManifest>;
 
 export function avatarImageFor(avatar: PackAvatar, state: AvatarState): string {
-  const states = avatar.states as Partial<Record<AvatarState, string>> & { idle: string };
-  return states[state] ?? states.idle;
+  return avatar.states[state] ?? avatar.states.idle;
 }

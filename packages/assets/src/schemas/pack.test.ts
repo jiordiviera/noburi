@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { avatarImageFor, PackManifest } from "./pack.ts";
 
 const valid = {
@@ -9,7 +9,14 @@ const valid = {
   license: "CC-BY-4.0",
   author: "Noburi contributors",
   tileSize: 32,
-  avatars: [{ id: "builder", displayName: "Builder", size: [48, 48], states: { idle: "avatars/builder/idle.png", working: "avatars/builder/working.png" } }],
+  avatars: [
+    {
+      id: "builder",
+      displayName: "Builder",
+      size: [48, 48],
+      states: { idle: "avatars/builder/idle.png", working: "avatars/builder/working.png" },
+    },
+  ],
   worlds: ["worlds/cozy-office/map.json"],
 };
 

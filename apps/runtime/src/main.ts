@@ -3,7 +3,10 @@ import { createRuntimeServer, listenLoopback } from "./server.ts";
 
 const token = process.env.NOBURI_RUNTIME_TOKEN ?? randomBytes(32).toString("base64url");
 const port = Number(process.env.NOBURI_RUNTIME_PORT ?? 0);
-const allowedOrigins = (process.env.NOBURI_ALLOWED_ORIGINS ?? "http://localhost:1420,tauri://localhost,http://tauri.localhost").split(",");
+const allowedOrigins = (
+  process.env.NOBURI_ALLOWED_ORIGINS ??
+  "http://localhost:1420,tauri://localhost,http://tauri.localhost"
+).split(",");
 
 const server = createRuntimeServer({ token, allowedOrigins });
 const boundPort = await listenLoopback(server, port);

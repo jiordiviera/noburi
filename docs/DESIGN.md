@@ -25,18 +25,18 @@ Values in square brackets (`[sum]`, `[project-a]`) are placeholders for runtime 
 
 ## Tokens
 
-| Token | Value | Use |
-|---|---|---|
-| Night | `#101820` | App background |
-| Slate | `#26323D` | Surfaces, cards |
-| Surface-2 | `#1B252E` | Inputs, inset areas |
-| Border | `#34424E` | Hairlines |
-| Honey | `#F0BE79` | Primary CTA, accent, warning, WAITING APPROVAL |
-| Mint | `#7DD3B0` | Success, active work |
-| Cream | `#F6F0E5` | Primary text |
-| Muted | `#A7B3BE` | Secondary text (≥ 4.5:1 on Night and Slate) |
-| Error | `#F2867A` | Failures, destructive actions |
-| Focus / info | `#8EC5FF` | Focus ring, THINKING, info |
+| Token        | Value     | Use                                            |
+| ------------ | --------- | ---------------------------------------------- |
+| Night        | `#101820` | App background                                 |
+| Slate        | `#26323D` | Surfaces, cards                                |
+| Surface-2    | `#1B252E` | Inputs, inset areas                            |
+| Border       | `#34424E` | Hairlines                                      |
+| Honey        | `#F0BE79` | Primary CTA, accent, warning, WAITING APPROVAL |
+| Mint         | `#7DD3B0` | Success, active work                           |
+| Cream        | `#F6F0E5` | Primary text                                   |
+| Muted        | `#A7B3BE` | Secondary text (≥ 4.5:1 on Night and Slate)    |
+| Error        | `#F2867A` | Failures, destructive actions                  |
+| Focus / info | `#8EC5FF` | Focus ring, THINKING, info                     |
 
 Spacing 4/8/12/16/24 px. Radius 10/12/14 px. Touch targets ≥ 44 px.
 
@@ -47,15 +47,15 @@ All three are SIL OFL; bundle via `@fontsource` packages, check licence files be
 
 Every state has a text label; colour is never the only signal.
 
-| State | Badge |
-|---|---|
-| IDLE | outline, muted |
-| THINKING | outline, focus blue |
-| WORKING | filled Mint |
+| State            | Badge                                              |
+| ---------------- | -------------------------------------------------- |
+| IDLE             | outline, muted                                     |
+| THINKING         | outline, focus blue                                |
+| WORKING          | filled Mint                                        |
 | WAITING APPROVAL | filled Honey, bold — always visible above the fold |
-| SUCCEEDED | outline Mint |
-| FAILED | outline Error |
-| INTERRUPTED | dashed outline |
+| SUCCEEDED        | outline Mint                                       |
+| FAILED           | outline Error                                      |
+| INTERRUPTED      | dashed outline                                     |
 
 ## Rules
 

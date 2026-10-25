@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +32,7 @@ const ACCENT_SWATCH: Record<Appearance["accent"], string> = {
 
 interface Props {
   appearance: Appearance;
-  update: <K extends keyof Appearance>(key: K, value: Appearance[K]) => void;
+  update: (key: keyof Appearance, value: unknown) => void;
   reset: () => void;
 }
 
@@ -36,12 +42,14 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Theme</CardTitle>
-          <CardDescription>Applies to the whole app. The pixel office keeps its own colours.</CardDescription>
+          <CardDescription>
+            Applies to the whole app. The pixel office keeps its own colours.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <RadioGroup
             value={appearance.theme}
-            onValueChange={(v) => update("theme", v as Appearance["theme"])}
+            onValueChange={(v) => update("theme", v)}
             className="grid grid-cols-2 gap-3 sm:grid-cols-4"
             aria-label="Theme"
           >
@@ -53,10 +61,15 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
                   htmlFor={`theme-${t.id}`}
                   className={cn(
                     "flex cursor-pointer flex-col gap-2 rounded-lg border-2 p-2",
-                    appearance.theme === t.id ? "border-primary" : "border-transparent hover:border-border",
+                    appearance.theme === t.id
+                      ? "border-primary"
+                      : "border-transparent hover:border-border",
                   )}
                 >
-                  <span className="flex h-16 flex-col gap-1.5 rounded-md p-2" style={{ background: p.bg }}>
+                  <span
+                    className="flex h-16 flex-col gap-1.5 rounded-md p-2"
+                    style={{ background: p.bg }}
+                  >
                     <span className="h-2 w-10 rounded-sm" style={{ background: p.fg }} />
                     <span className="flex-1 rounded-sm" style={{ background: p.card }} />
                   </span>
@@ -74,13 +87,21 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
             <ToggleGroup
               type="single"
               value={appearance.accent}
-              onValueChange={(v) => v && update("accent", v as Appearance["accent"])}
+              onValueChange={(v) => v && update("accent", v)}
               aria-label="Accent colour"
               className="justify-start"
             >
               {ACCENTS.map((a) => (
-                <ToggleGroupItem key={a.id} value={a.id} aria-label={a.label} className="gap-2 px-3">
-                  <span className="size-3 rounded-full" style={{ background: ACCENT_SWATCH[a.id] }} />
+                <ToggleGroupItem
+                  key={a.id}
+                  value={a.id}
+                  aria-label={a.label}
+                  className="gap-2 px-3"
+                >
+                  <span
+                    className="size-3 rounded-full"
+                    style={{ background: ACCENT_SWATCH[a.id] }}
+                  />
                   {a.label}
                 </ToggleGroupItem>
               ))}
@@ -98,7 +119,7 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label htmlFor="ui-font">Interface font</Label>
-              <Select value={appearance.uiFont} onValueChange={(v) => update("uiFont", v as Appearance["uiFont"])}>
+              <Select value={appearance.uiFont} onValueChange={(v) => update("uiFont", v)}>
                 <SelectTrigger id="ui-font" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -113,7 +134,7 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="mono-font">Code &amp; metrics font</Label>
-              <Select value={appearance.monoFont} onValueChange={(v) => update("monoFont", v as Appearance["monoFont"])}>
+              <Select value={appearance.monoFont} onValueChange={(v) => update("monoFont", v)}>
                 <SelectTrigger id="mono-font" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -131,21 +152,25 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <Label id="font-size-label">Text size</Label>
-              <span className="font-mono text-sm text-muted-foreground">{Math.round(appearance.fontScale * 100)} %</span>
+              <span className="font-mono text-sm text-muted-foreground">
+                {Math.round(appearance.fontScale * 100)} %
+              </span>
             </div>
             <Slider
               aria-labelledby="font-size-label"
               min={0}
               max={FONT_SCALES.length - 1}
               step={1}
-              value={[FONT_SCALES.indexOf(appearance.fontScale as (typeof FONT_SCALES)[number])]}
-              onValueChange={([i]) => update("fontScale", FONT_SCALES[i ?? 2] ?? 1)}
+              value={[FONT_SCALES.indexOf(appearance.fontScale)]}
+              onValueChange={([i]) => update("fontScale", FONT_SCALES[i ?? -1])}
             />
           </div>
 
           <div className="rounded-lg bg-muted p-4">
             <p className="text-sm">Developer finished task 2 and is waiting for review.</p>
-            <p className="mt-1 font-mono text-xs text-muted-foreground">tool.completed Edit · 1.8 s · source sdk</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">
+              tool.completed Edit · 1.8 s · source sdk
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -160,7 +185,7 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
               type="single"
               variant="outline"
               value={appearance.density}
-              onValueChange={(v) => v && update("density", v as Appearance["density"])}
+              onValueChange={(v) => v && update("density", v)}
               aria-label="Density"
             >
               <ToggleGroupItem value="comfortable">Comfortable</ToggleGroupItem>
@@ -173,7 +198,7 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
               type="single"
               variant="outline"
               value={appearance.radius}
-              onValueChange={(v) => v && update("radius", v as Appearance["radius"])}
+              onValueChange={(v) => v && update("radius", v)}
               aria-label="Corner radius"
             >
               <ToggleGroupItem value="sharp">Sharp</ToggleGroupItem>
@@ -182,12 +207,15 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
             </ToggleGroup>
           </SettingRow>
           <Separator />
-          <SettingRow label="Office zoom" description="Pixel art stays crisp at whole-number zoom levels.">
+          <SettingRow
+            label="Office zoom"
+            description="Pixel art stays crisp at whole-number zoom levels."
+          >
             <ToggleGroup
               type="single"
               variant="outline"
               value={String(appearance.officeScale)}
-              onValueChange={(v) => v && update("officeScale", Number(v) as Appearance["officeScale"])}
+              onValueChange={(v) => v && update("officeScale", Number(v))}
               aria-label="Office zoom"
             >
               <ToggleGroupItem value="2">2×</ToggleGroupItem>
@@ -196,7 +224,11 @@ export function AppearanceSettings({ appearance, update, reset }: Props) {
             </ToggleGroup>
           </SettingRow>
           <Separator />
-          <SettingRow label="Reduce motion" description="Agents change state without walking or bouncing." htmlFor="reduce-motion">
+          <SettingRow
+            label="Reduce motion"
+            description="Agents change state without walking or bouncing."
+            htmlFor="reduce-motion"
+          >
             <Switch
               id="reduce-motion"
               checked={appearance.reduceMotion}

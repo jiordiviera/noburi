@@ -8,3 +8,4 @@ src-tauri/target/
 *.db
 *.db-journal
 .DS_Store
+.vitest/

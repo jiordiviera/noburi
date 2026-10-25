@@ -22,7 +22,10 @@ export function App() {
         <span className="text-sm font-medium">{NAV.find((n) => n.id === page)?.label}</span>
       </header>
       <div className="flex min-h-0 flex-1">
-        <nav aria-label="Main" className="flex w-16 shrink-0 flex-col items-center gap-1.5 border-r border-sidebar-border bg-sidebar pt-3">
+        <nav
+          aria-label="Main"
+          className="flex w-16 shrink-0 flex-col items-center gap-1.5 border-r border-sidebar-border bg-sidebar pt-3"
+        >
           {NAV.map(({ id, label, Icon }) => (
             <button
               key={id}
@@ -44,7 +47,8 @@ export function App() {
             <section className="max-w-3xl rounded-xl border border-dashed bg-card p-6">
               <h1 className="text-lg font-semibold">Projects</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Session discovery is not connected yet. Noburi will list your local Claude Code projects here, read-only.
+                Session discovery is not connected yet. Noburi will list your local Claude Code
+                projects here, read-only.
               </p>
             </section>
           ) : (

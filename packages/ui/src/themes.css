@@ -140,16 +140,34 @@
 
 /* Accent drives shadcn's primary everywhere (buttons, focus of selections, sliders). */
 :root,
-[data-accent="honey"] { --primary: var(--nb-honey); --sidebar-primary: var(--nb-honey); }
-[data-accent="mint"] { --primary: var(--nb-mint); --sidebar-primary: var(--nb-mint); }
-[data-accent="sky"] { --primary: var(--nb-sky); --sidebar-primary: var(--nb-sky); }
-[data-accent="coral"] { --primary: var(--nb-coral); --sidebar-primary: var(--nb-coral); }
-:root { --sidebar-primary-foreground: var(--primary-foreground); }
+[data-accent="honey"] {
+  --primary: var(--nb-honey);
+  --sidebar-primary: var(--nb-honey);
+}
+[data-accent="mint"] {
+  --primary: var(--nb-mint);
+  --sidebar-primary: var(--nb-mint);
+}
+[data-accent="sky"] {
+  --primary: var(--nb-sky);
+  --sidebar-primary: var(--nb-sky);
+}
+[data-accent="coral"] {
+  --primary: var(--nb-coral);
+  --sidebar-primary: var(--nb-coral);
+}
+:root {
+  --sidebar-primary-foreground: var(--primary-foreground);
+}
 
 /* Tailwind v4 derives every spacing utility from --spacing. */
-[data-density="compact"] { --spacing: 0.21rem; }
+[data-density="compact"] {
+  --spacing: 0.21rem;
+}
 
-html { font-size: calc(16px * var(--nb-font-scale, 1)); }
+html {
+  font-size: calc(16px * var(--nb-font-scale, 1));
+}
 
 [data-motion="reduce"] *,
 [data-motion="reduce"] *::before,

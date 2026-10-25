@@ -2,11 +2,13 @@
   "name": "@noburi/runtime",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/main.ts",
-    "start": "tsx src/main.ts",
-    "typecheck": "tsc -p tsconfig.json"
+    "dev": "vpx --watch src/main.ts",
+    "start": "vpx src/main.ts"
   },
-  "dependencies": { "@noburi/core": "workspace:*" }
+  "dependencies": {
+    "@noburi/core": "workspace:*"
+  }
 }

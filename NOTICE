@@ -1,0 +1,18 @@
+Noburi
+Copyright 2026 Jiordi Kengne and Noburi contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Trademarks
+  "Noburi", the Noburi logo and the Noburi app icon are not licensed under the
+  Apache License (see section 6 of LICENSE). You may use the name to refer to
+  this project, but not to brand a fork or a derived product as Noburi.
+
+Third-party material in this repository
+  assets/vendor/svgl/  Provider and service logos (Claude, Anthropic, Gemini,
+                       OpenAI, GitHub, Buy Me a Coffee) from the SVGL catalogue.
+                       They belong to their owners and are not covered by this
+                       licence. See assets/vendor/svgl/PROVENANCE.md.
+
+Fonts and npm dependencies are installed at build time and keep their own
+licences (fonts: SIL Open Font License 1.1).

@@ -1,5 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { applyAppearance, DEFAULT_APPEARANCE, parseAppearance, type AppearanceTarget } from "./appearance.ts";
+import { describe, expect, it } from "vite-plus/test";
+import {
+  applyAppearance,
+  DEFAULT_APPEARANCE,
+  parseAppearance,
+  type AppearanceTarget,
+} from "./appearance.ts";
 
 function fakeRoot() {
   const classes = new Set<string>();
@@ -19,7 +24,12 @@ describe("appearance", () => {
   });
 
   it("repairs bad stored values field by field", () => {
-    const a = parseAppearance({ theme: "neon", uiFont: "inter", fontScale: 7, reduceMotion: "yes" });
+    const a = parseAppearance({
+      theme: "neon",
+      uiFont: "inter",
+      fontScale: 7,
+      reduceMotion: "yes",
+    });
     expect(a.theme).toBe("cozy-night");
     expect(a.uiFont).toBe("inter");
     expect(a.fontScale).toBe(1);
@@ -27,9 +37,21 @@ describe("appearance", () => {
     expect(parseAppearance("garbage")).toEqual(DEFAULT_APPEARANCE);
   });
 
+  it("keeps the current value when a UI event sends something invalid", () => {
+    const current = { ...DEFAULT_APPEARANCE, theme: "matcha" as const, officeScale: 4 as const };
+    const next = parseAppearance({ ...current, theme: "neon", officeScale: 5 }, current);
+    expect(next.theme).toBe("matcha");
+    expect(next.officeScale).toBe(4);
+  });
+
   it("applies a light theme without the dark class", () => {
     const { root, classes, props } = fakeRoot();
-    applyAppearance(root, { ...DEFAULT_APPEARANCE, theme: "cozy-day", monoFont: "jetbrains-mono", radius: "round" });
+    applyAppearance(root, {
+      ...DEFAULT_APPEARANCE,
+      theme: "cozy-day",
+      monoFont: "jetbrains-mono",
+      radius: "round",
+    });
     expect(root.dataset.theme).toBe("cozy-day");
     expect(classes.has("dark")).toBe(false);
     expect(props.get("--nb-font-code")).toContain("JetBrains Mono");

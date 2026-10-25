@@ -25,8 +25,10 @@ export function useAppearance() {
     }
   }, [appearance]);
 
+  // UI controls hand back raw strings and numbers; re-validate them instead of trusting a cast.
   const update = useCallback(
-    <K extends keyof Appearance>(key: K, value: Appearance[K]) => setAppearance((a) => ({ ...a, [key]: value })),
+    (key: keyof Appearance, value: unknown) =>
+      setAppearance((a) => parseAppearance({ ...a, [key]: value }, a)),
     [],
   );
   const reset = useCallback(() => setAppearance(parseAppearance({})), []);

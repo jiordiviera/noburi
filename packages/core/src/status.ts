@@ -42,8 +42,24 @@ export function assertTransition(from: TaskStatus, to: TaskStatus): void {
   }
 }
 
-export const MissionStatus = z.enum(["DRAFT", "RUNNING", "COMPLETED", "FAILED", "CANCELLED", "INTERRUPTED"]);
+export const MissionStatus = z.enum([
+  "DRAFT",
+  "RUNNING",
+  "COMPLETED",
+  "FAILED",
+  "CANCELLED",
+  "INTERRUPTED",
+]);
 export type MissionStatus = z.infer<typeof MissionStatus>;
 
-export const AgentRunStatus = z.enum(["STARTING", "RUNNING", "WAITING_APPROVAL", "SUCCEEDED", "FAILED", "CANCELLING", "CANCELLED", "INTERRUPTED"]);
+export const AgentRunStatus = z.enum([
+  "STARTING",
+  "RUNNING",
+  "WAITING_APPROVAL",
+  "SUCCEEDED",
+  "FAILED",
+  "CANCELLING",
+  "CANCELLED",
+  "INTERRUPTED",
+]);
 export type AgentRunStatus = z.infer<typeof AgentRunStatus>;

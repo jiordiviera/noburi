@@ -42,7 +42,11 @@ function rectsFromMap(rows, palette, ox = 0, oy = 0) {
 }
 
 function svgFromRects(w, h, rects) {
-  const body = rects.map(([x, y, rw, rh, f]) => `<rect x="${x}" y="${y}" width="${rw}" height="${rh}" fill="${f}"/>`).join("");
+  const body = rects
+    .map(
+      ([x, y, rw, rh, f]) => `<rect x="${x}" y="${y}" width="${rw}" height="${rh}" fill="${f}"/>`,
+    )
+    .join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges">${body}</svg>\n`;
 }
 
@@ -132,7 +136,10 @@ for (const [name, cw] of Object.entries(COLORWAYS)) {
   const palette = { K: INK, F: FACE, C: CHEEK, G: SPROUT, g: SPROUT_DARK, ...cw };
   for (const [state, face] of Object.entries(FACES)) {
     const body = state === "working" ? BODY_TYPING : BODY;
-    write(`assets/avatars/official/${name}/${state}.svg`, svgFromMap([...HEAD_TOP, ...face, ...body], palette));
+    write(
+      `assets/avatars/official/${name}/${state}.svg`,
+      svgFromMap([...HEAD_TOP, ...face, ...body], palette),
+    );
   }
 }
 
@@ -140,25 +147,31 @@ for (const [name, cw] of Object.entries(COLORWAYS)) {
 const DESK_W = 36;
 const desk = [];
 // laptop (back side, facing the agent) on the left of the desk top
-desk.push(...rectsFromMap(
-  [
-    ".KKKKKKKK.",
-    "KTTTTTTTTK",
-    "KTTTTGGTTK",
-    "KTTTTTGTTK",
-    "KTTTTTTTTK",
-    ".KKKKKKKK.",
-    "..KKKKKK..",
-  ],
-  { K: INK, T: "#34424E", G: SPROUT },
-  1, 4,
-));
+desk.push(
+  ...rectsFromMap(
+    [
+      ".KKKKKKKK.",
+      "KTTTTTTTTK",
+      "KTTTTGGTTK",
+      "KTTTTTGTTK",
+      "KTTTTTTTTK",
+      ".KKKKKKKK.",
+      "..KKKKKK..",
+    ],
+    { K: INK, T: "#34424E", G: SPROUT },
+    1,
+    4,
+  ),
+);
 // mug on the right
-desk.push(...rectsFromMap(
-  [".KKKK.", "KHHHHK", "KFFFFKK", "KFFFFK.K", "KFFFFKK", ".KKKK."].map((r) => r.padEnd(8, ".")),
-  { K: INK, H: "#8A6A4A", F: FACE },
-  27, 4,
-));
+desk.push(
+  ...rectsFromMap(
+    [".KKKK.", "KHHHHK", "KFFFFKK", "KFFFFK.K", "KFFFFKK", ".KKKK."].map((r) => r.padEnd(8, ".")),
+    { K: INK, H: "#8A6A4A", F: FACE },
+    27,
+    4,
+  ),
+);
 desk.push([0, 10, DESK_W, 1, "#C69A6B"]); // top highlight
 desk.push([0, 11, DESK_W, 3, "#A47E57"]); // top surface
 desk.push([0, 14, DESK_W, 1, "#6B4F35"]); // edge shadow
@@ -168,33 +181,39 @@ desk.push([9, 20, 2, 1, "#C69A6B"], [26, 20, 2, 1, "#C69A6B"]); // handles
 desk.push([2, 26, 4, 4, "#6B4F35"], [DESK_W - 6, 26, 4, 4, "#6B4F35"]); // legs
 write("assets/worlds/cozy-office/objects/desk.svg", svgFromRects(DESK_W, 30, desk));
 
-write("assets/worlds/cozy-office/objects/bubble-approval.svg", svgFromMap(
-  [
-    ".KKKKKKKKK.",
-    "KYYYYKYYYYK",
-    "KYYYYKYYYYK",
-    "KYYYYKYYYYK",
-    "KYYYYYYYYYK",
-    "KYYYYKYYYYK",
-    ".KKKKKKKKK.",
-    "...KYK.....",
-    "....K......",
-  ],
-  { K: INK, Y: "#F0BE79" },
-));
+write(
+  "assets/worlds/cozy-office/objects/bubble-approval.svg",
+  svgFromMap(
+    [
+      ".KKKKKKKKK.",
+      "KYYYYKYYYYK",
+      "KYYYYKYYYYK",
+      "KYYYYKYYYYK",
+      "KYYYYYYYYYK",
+      "KYYYYKYYYYK",
+      ".KKKKKKKKK.",
+      "...KYK.....",
+      "....K......",
+    ],
+    { K: INK, Y: "#F0BE79" },
+  ),
+);
 
-write("assets/worlds/cozy-office/objects/bubble-thinking.svg", svgFromMap(
-  [
-    ".KKKKKKKKK.",
-    "KFFFFFFFFFK",
-    "KFKFFKFFKFK",
-    "KFFFFFFFFFK",
-    ".KKKKKKKKK.",
-    "..KK.......",
-    ".KK........",
-  ],
-  { K: INK, F: "#8EC5FF" },
-));
+write(
+  "assets/worlds/cozy-office/objects/bubble-thinking.svg",
+  svgFromMap(
+    [
+      ".KKKKKKKKK.",
+      "KFFFFFFFFFK",
+      "KFKFFKFFKFK",
+      "KFFFFFFFFFK",
+      ".KKKKKKKKK.",
+      "..KK.......",
+      ".KK........",
+    ],
+    { K: INK, F: "#8EC5FF" },
+  ),
+);
 
 // ---------------------------------------------------------------- background (320×192)
 const W = 320;
@@ -218,8 +237,23 @@ for (let row = 0, y = 72; y < H; row++, y += 8) {
 
 // window with night sky
 r(22, 12, 60, 44, "#1B252E");
-for (let i = 0; i < 40; i += 4) r(24, 14 + i, 56, 4, ["#1E3550", "#22406A", "#27497A", "#2C5286", "#305A90"][Math.min(4, i / 8 | 0)]);
-for (const [sx, sy] of [[30, 18], [44, 24], [36, 34], [58, 20], [72, 38], [52, 44]]) r(sx, sy, 1, 1, FACE);
+for (let i = 0; i < 40; i += 4)
+  r(
+    24,
+    14 + i,
+    56,
+    4,
+    ["#1E3550", "#22406A", "#27497A", "#2C5286", "#305A90"][Math.min(4, (i / 8) | 0)],
+  );
+for (const [sx, sy] of [
+  [30, 18],
+  [44, 24],
+  [36, 34],
+  [58, 20],
+  [72, 38],
+  [52, 44],
+])
+  r(sx, sy, 1, 1, FACE);
 r(66, 18, 5, 5, FACE);
 r(67, 19, 2, 2, "#E3D9C6");
 r(51, 14, 2, 40, "#1B252E");

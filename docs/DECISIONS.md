@@ -6,8 +6,8 @@ Versions were checked on npm on 2026-10-25.
 
 - Node 22 (local v22.23.4), pnpm 12.15.0 workspaces, Rust 1.99.1 for Tauri later.
 - TypeScript **6.0.3**. It was first chosen because `typescript-eslint` capped TypeScript at `<6.1`; ESLint is
-  gone now (D8), so moving to TypeScript 7 is possible once Vite and Vitest typings are checked against it.
-- Vite 8.3.5, React 19.3.1, Vitest 5.0.5, Zod 4.6.7, Oxlint 1.89 (see D8).
+  gone (D8) and `vp check` type-checks with typescript-go, so `typescript` 6 only serves editors now.
+- Vite 8.3.5, React 19.3.1, Vitest 5.0.5, Zod 4.6.7, Vite+ 1.4 toolchain (see D8).
 - Internal packages export their TypeScript source directly (`"exports": "./src/index.ts"`); the runtime runs
   through `tsx`. No build step per package until packaging needs one.
 - `esbuild` is the only dependency allowed to run install scripts (`allowBuilds` in `pnpm-workspace.yaml`).
@@ -70,10 +70,26 @@ render and to validate. Tile layers can be added later for user-made maps; the p
 - shadcn primitives keep their internal lucide icons (chevrons, checks). App-level icons stay Heroicons.
 - `cn` comes from shadcn's own `cn` package (replaces clsx + tailwind-merge).
 
-## D8 — Oxlint instead of ESLint
+## D8 — Vite+ as the single toolchain
 
-Linting uses Oxlint 1.89 (Rust, from the oxc project), configured in `.oxlintrc.json`: plugins typescript, react,
-jsx-a11y, import, vitest and unicorn; `correctness` rules are errors, `suspicious` rules warnings, and
-`pnpm lint` fails on any warning. Disabled on purpose: `react/react-in-jsx-scope` (React 19 automatic JSX
-runtime), unassigned imports for `.css` files, and `no-underscore-dangle` inside generated shadcn components.
-Oxlint does not format code; a formatter (oxfmt or Biome) is still to choose.
+`vite-plus` 1.4 (`vp`) replaces ESLint, standalone Oxlint, Vitest and tsx:
+
+- `pnpm check` runs `vp check --deny-warnings`: Oxfmt formatting, Oxlint rules and TypeScript type checks
+  (tsgolint on typescript-go, `typeAware` + `typeCheck`) in one pass. Per-package `tsc` scripts are gone.
+- `pnpm test` runs `vp test`; tests import from `vite-plus/test`. The runtime runs through `vpx`.
+- All lint, format and test settings live in the root `vite.config.ts`; `vite` resolves to
+  `@voidzero-dev/vite-plus-core` through the pnpm catalog set up by `vp migrate`.
+- Lint plugins: typescript, react, jsx-a11y, import, vitest, unicorn. `correctness` = error, `suspicious` = warn,
+  warnings fail the check. Turned off on purpose: `react/react-in-jsx-scope` (automatic JSX runtime), unassigned
+  `.css` imports, and `no-underscore-dangle` / `no-unsafe-type-assertion` inside generated shadcn components.
+- The type-aware pass found unchecked `as` casts in our own code; they were replaced by Zod validation instead of
+  being silenced. UI controls now hand raw values to `parseAppearance`, which keeps the current value when one is
+  invalid.
+- Biome was considered: it lints and formats but does not type-check, so `tsc` would have stayed.
+
+## D9 — Licence
+
+Apache-2.0 (official text, SHA-256 `cfc7749b…d30`) with a `NOTICE` file. Chosen over MIT for the explicit patent
+grant from contributors and because section 6 states the licence gives no trademark rights, which keeps the
+Noburi name and logo out of the code licence as the spec asks. Third-party logos and fonts keep their own terms.
+The original pixel art is covered by Apache-2.0 for now; a separate asset licence (CC-BY-4.0) can be added later.
