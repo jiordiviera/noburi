@@ -5,8 +5,9 @@ Versions were checked on npm on 2026-10-25.
 ## D1 — Toolchain
 
 - Node 22 (local v22.23.4), pnpm 12.15.0 workspaces, Rust 1.99.1 for Tauri later.
-- TypeScript **6.0.3**, not 7.0.2: `typescript-eslint` 8.72.0 supports `<6.1.0` only.
-- Vite 8.3.5, React 19.3.1, Vitest 5.0.5, Zod 4.6.7, ESLint 10.
+- TypeScript **6.0.3**. It was first chosen because `typescript-eslint` capped TypeScript at `<6.1`; ESLint is
+  gone now (D8), so moving to TypeScript 7 is possible once Vite and Vitest typings are checked against it.
+- Vite 8.3.5, React 19.3.1, Vitest 5.0.5, Zod 4.6.7, Oxlint 1.89 (see D8).
 - Internal packages export their TypeScript source directly (`"exports": "./src/index.ts"`); the runtime runs
   through `tsx`. No build step per package until packaging needs one.
 - `esbuild` is the only dependency allowed to run install scripts (`allowBuilds` in `pnpm-workspace.yaml`).
@@ -68,3 +69,11 @@ render and to validate. Tile layers can be added later for user-made maps; the p
 - Appearance is per-device and kept in `localStorage` for now; it moves to the runtime settings store with SQLite.
 - shadcn primitives keep their internal lucide icons (chevrons, checks). App-level icons stay Heroicons.
 - `cn` comes from shadcn's own `cn` package (replaces clsx + tailwind-merge).
+
+## D8 — Oxlint instead of ESLint
+
+Linting uses Oxlint 1.89 (Rust, from the oxc project), configured in `.oxlintrc.json`: plugins typescript, react,
+jsx-a11y, import, vitest and unicorn; `correctness` rules are errors, `suspicious` rules warnings, and
+`pnpm lint` fails on any warning. Disabled on purpose: `react/react-in-jsx-scope` (React 19 automatic JSX
+runtime), unassigned imports for `.css` files, and `no-underscore-dangle` inside generated shadcn components.
+Oxlint does not format code; a formatter (oxfmt or Biome) is still to choose.

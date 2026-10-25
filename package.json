@@ -3,23 +3,22 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.15.0",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev:runtime": "pnpm --filter @noburi/runtime dev",
     "dev:desktop": "pnpm --filter @noburi/desktop dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "lint": "eslint .",
+    "lint": "oxlint --deny-warnings",
     "test": "vitest run"
   },
   "devDependencies": {
-    "@eslint/js": "10.0.1",
     "@types/node": "26.6.5",
-    "eslint": "10.13.0",
-    "globals": "17.13.0",
+    "oxlint": "1.89.0",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.72.0",
     "vitest": "5.0.5"
   }
 }
