@@ -24,6 +24,87 @@ export interface TranscriptPage {
   entries: TranscriptEntry[];
 }
 
+export type MissionStatus =
+  | "DRAFT"
+  | "RUNNING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED"
+  | "INTERRUPTED";
+export type TaskStatus =
+  | "PENDING"
+  | "READY"
+  | "RUNNING"
+  | "WAITING_APPROVAL"
+  | "SUCCEEDED"
+  | "FAILED"
+  | "CANCELLED"
+  | "INTERRUPTED";
+
+export interface Agent {
+  id: string;
+  name: string;
+  role: string;
+  model: string;
+  avatar: "developer" | "reviewer" | "researcher";
+}
+
+export interface Mission {
+  id: string;
+  workspacePath: string;
+  title: string;
+  objective: string;
+  status: MissionStatus;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+}
+
+export interface MissionTask {
+  id: string;
+  missionId: string;
+  position: number;
+  title: string;
+  instructions: string;
+  dependsOn: string[];
+  agentId: string;
+  status: TaskStatus;
+  sessionId: string | null;
+  resultText: string | null;
+  error: string | null;
+}
+
+export interface MissionArtifact {
+  id: string;
+  taskId: string | null;
+  kind: "summary" | "diff" | "log";
+  title: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface MissionView {
+  mission: Mission;
+  tasks: MissionTask[];
+  activeRunId: string | null;
+  artifacts?: MissionArtifact[];
+}
+
+export interface MissionEvent {
+  seq: number;
+  taskId: string | null;
+  type: string;
+  payload: Record<string, unknown>;
+  at: string;
+}
+
+export interface PlanTask {
+  title: string;
+  instructions: string;
+  agentId: string;
+  dependsOn: number[];
+}
+
 export class RuntimeError extends Error {
   constructor(
     readonly status: number,
@@ -110,38 +191,53 @@ export const runtime = {
     call<{ status: RunStatus }>(`/runs/${runId}/cancel`, { method: "POST" }),
 
   /** Reads the run's server-sent events with the auth header (EventSource cannot send one). */
-  async streamEvents(
-    runId: string,
-    onRecord: (record: RunRecord) => void,
-    signal: AbortSignal,
-  ): Promise<void> {
-    const { url, token } = await connect();
-    const res = await fetch(`${url}/runs/${runId}/events?after=0`, {
-      headers: headers(token),
-      signal,
-    });
-    if (!res.ok || !res.body)
-      throw new RuntimeError(res.status, "Cannot open the run stream.", null);
-    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
-    let buffer = "";
-    for (;;) {
-      const { value, done } = await reader.read();
-      if (done) return;
-      buffer += value;
-      let end = buffer.indexOf("\n\n");
-      while (end !== -1) {
-        const frame = buffer.slice(0, end);
-        buffer = buffer.slice(end + 2);
-        const data = frame
-          .split("\n")
-          .filter((l) => l.startsWith("data: "))
-          .map((l) => l.slice(6))
-          .join("\n");
-        // Same trust boundary as `call`: records come from our own runtime.
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-        if (data) onRecord(JSON.parse(data) as RunRecord);
-        end = buffer.indexOf("\n\n");
-      }
-    }
-  },
+  streamEvents: (runId: string, onRecord: (record: RunRecord) => void, signal: AbortSignal) =>
+    readEvents<RunRecord>(`/runs/${runId}/events?after=0`, onRecord, signal),
+
+  agents: () => call<{ agents: Agent[] }>("/agents"),
+  missions: () => call<{ missions: MissionView[] }>("/missions"),
+  mission: (id: string) => call<MissionView & { artifacts: MissionArtifact[] }>(`/missions/${id}`),
+  createMission: (body: { workspacePath: string; objective: string; title?: string }) =>
+    call<MissionView>("/missions", { method: "POST", body: JSON.stringify(body) }),
+  setPlan: (id: string, tasks: PlanTask[]) =>
+    call<MissionView>(`/missions/${id}/plan`, { method: "PUT", body: JSON.stringify({ tasks }) }),
+  startMission: (id: string) => call<MissionView>(`/missions/${id}/start`, { method: "POST" }),
+  cancelMission: (id: string) => call<MissionView>(`/missions/${id}/cancel`, { method: "POST" }),
+  deleteMission: (id: string) => call<{ ok: true }>(`/missions/${id}`, { method: "DELETE" }),
+  streamMission: (id: string, onEvent: (event: MissionEvent) => void, signal: AbortSignal) =>
+    readEvents<MissionEvent>(`/missions/${id}/events?after=0`, onEvent, signal),
 };
+
+/** Server-sent events reader; T is the shape the runtime sends on this stream. */
+// oxlint-disable-next-line typescript/no-unnecessary-type-parameters
+async function readEvents<T>(
+  path: string,
+  onData: (data: T) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  const { url, token } = await connect();
+  const res = await fetch(`${url}${path}`, { headers: headers(token), signal });
+  if (!res.ok || !res.body)
+    throw new RuntimeError(res.status, "Cannot open the event stream.", null);
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) return;
+    buffer += value;
+    let end = buffer.indexOf("\n\n");
+    while (end !== -1) {
+      const frame = buffer.slice(0, end);
+      buffer = buffer.slice(end + 2);
+      const data = frame
+        .split("\n")
+        .filter((l) => l.startsWith("data: "))
+        .map((l) => l.slice(6))
+        .join("\n");
+      // Same trust boundary as `call`: events come from our own runtime.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      if (data) onData(JSON.parse(data) as T);
+      end = buffer.indexOf("\n\n");
+    }
+  }
+}

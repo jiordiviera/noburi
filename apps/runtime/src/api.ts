@@ -10,11 +10,16 @@ import {
   type DiscoveryFs,
   type SessionSource,
 } from "@noburi/provider-claude";
+import { AGENTS, agentById } from "./agents.ts";
+import { MissionError, type MissionService } from "./missions.ts";
 import type { RunManager } from "./runs.ts";
+import type { Store } from "./store.ts";
 
 export interface ApiDeps {
   sessions: SessionSource;
   runs: RunManager;
+  /** Missions are optional so session-only setups and tests can omit them. */
+  missions?: { service: MissionService; store: Store };
   fs?: DiscoveryFs;
   now?: () => number;
 }
@@ -67,6 +72,48 @@ const CreateRunBody = z.strictObject({
 });
 
 const DecisionBody = z.strictObject({ approved: z.boolean() });
+
+const MISSION_ID = /^[0-9a-f-]{36}$/i;
+
+const CreateMissionBody = z.strictObject({
+  workspacePath: z.string().min(1),
+  objective: z.string().trim().min(1).max(4000),
+  title: z.string().trim().max(120).optional(),
+});
+
+const PlanBody = z
+  .strictObject({
+    tasks: z
+      .array(
+        z.strictObject({
+          title: z.string().trim().min(1).max(120),
+          instructions: z.string().trim().min(1).max(8000),
+          agentId: z.string().refine((id) => agentById(id) !== undefined, "unknown agent"),
+          dependsOn: z.array(z.number().int().nonnegative()).max(2).default([]),
+        }),
+      )
+      .min(1, "a plan needs at least one task")
+      .max(3, "the alpha runs at most three tasks per mission"),
+  })
+  .superRefine((plan, ctx) => {
+    // Depending only on earlier tasks keeps the plan acyclic by construction.
+    plan.tasks.forEach((task, index) => {
+      if (task.dependsOn.some((dep) => dep >= index)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `task ${index + 1} can only depend on earlier tasks`,
+        });
+      }
+    });
+  });
+
+function sse(res: ServerResponse): void {
+  res.writeHead(200, {
+    "content-type": "text/event-stream",
+    "cache-control": "no-cache",
+    connection: "keep-alive",
+  });
+}
 
 export function createApi(deps: ApiDeps): ApiHandler {
   const fs = deps.fs ?? nodeFs;
@@ -132,17 +179,90 @@ export function createApi(deps: ApiDeps): ApiHandler {
       return true;
     }
 
+    if (method === "GET" && url.pathname === "/agents") {
+      json(res, 200, { agents: AGENTS });
+      return true;
+    }
+
+    if (parts[0] === "missions" && deps.missions) {
+      const { service, store } = deps.missions;
+
+      if (parts.length === 1 && method === "GET") {
+        json(res, 200, {
+          missions: service
+            .list()
+            .map((mission) => ({ mission, tasks: store.listTasks(mission.id) })),
+        });
+        return true;
+      }
+
+      if (parts.length === 1 && method === "POST") {
+        const body = CreateMissionBody.safeParse(await readJson(req));
+        if (!body.success)
+          throw new HttpError(400, body.error.issues[0]?.message ?? "invalid body");
+        const { workspacePath } = body.data;
+        if (!isAbsolute(workspacePath))
+          throw new HttpError(400, "the workspace must be an absolute path");
+        if (!fs.isDirectory(workspacePath))
+          throw new HttpError(409, "the workspace folder does not exist", "missing_folder");
+        json(res, 201, service.create(body.data));
+        return true;
+      }
+
+      const missionId = parts[1] ?? "";
+      if (!MISSION_ID.test(missionId)) throw new HttpError(400, "invalid mission id");
+
+      if (parts.length === 2 && method === "GET") {
+        const view = service.view(missionId);
+        if (!view) throw new HttpError(404, "mission not found");
+        json(res, 200, { ...view, artifacts: store.listArtifacts(missionId) });
+        return true;
+      }
+
+      if (parts.length === 2 && method === "DELETE") {
+        service.delete(missionId);
+        json(res, 200, { ok: true });
+        return true;
+      }
+
+      if (parts.length === 3 && parts[2] === "plan" && method === "PUT") {
+        const body = PlanBody.safeParse(await readJson(req));
+        if (!body.success)
+          throw new HttpError(400, body.error.issues[0]?.message ?? "invalid plan");
+        json(res, 200, service.setPlan(missionId, body.data.tasks));
+        return true;
+      }
+
+      if (parts.length === 3 && parts[2] === "start" && method === "POST") {
+        json(res, 200, service.start(missionId));
+        return true;
+      }
+
+      if (parts.length === 3 && parts[2] === "cancel" && method === "POST") {
+        // 202: the mission reports CANCELLED only once its running task has really stopped.
+        json(res, 202, service.cancel(missionId));
+        return true;
+      }
+
+      if (parts.length === 3 && parts[2] === "events" && method === "GET") {
+        if (!service.view(missionId)) throw new HttpError(404, "mission not found");
+        const after = Number(url.searchParams.get("after") ?? 0) || 0;
+        sse(res);
+        const unsubscribe = service.subscribe(missionId, after, (event) => {
+          res.write(`id: ${event.seq}\ndata: ${JSON.stringify(event)}\n\n`);
+        });
+        req.on("close", unsubscribe);
+        return true;
+      }
+    }
+
     if (parts[0] === "runs" && parts[1]) {
       const runId = parts[1];
       if (deps.runs.status(runId) === undefined) throw new HttpError(404, "run not found");
 
       if (method === "GET" && parts[2] === "events" && parts.length === 3) {
         const after = Number(url.searchParams.get("after") ?? 0) || 0;
-        res.writeHead(200, {
-          "content-type": "text/event-stream",
-          "cache-control": "no-cache",
-          connection: "keep-alive",
-        });
+        sse(res);
         const unsubscribe = deps.runs.subscribe(runId, after, (record) => {
           res.write(`id: ${record.seq}\ndata: ${JSON.stringify(record)}\n\n`);
           if (record.event.type === "run.finished") res.end();
@@ -176,6 +296,10 @@ export function createApi(deps: ApiDeps): ApiHandler {
     try {
       return await route(req, res, url);
     } catch (error) {
+      if (error instanceof MissionError) {
+        json(res, error.status, { error: error.message, code: error.code });
+        return true;
+      }
       if (error instanceof HttpError) {
         json(res, error.status, {
           error: error.message,

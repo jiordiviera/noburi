@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Cog6ToothIcon, FolderIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, FolderIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
+import { MissionsPage } from "@/features/missions/MissionsPage";
 import { ProjectsPage } from "@/features/projects/ProjectsPage";
 import { AppearanceSettings } from "@/features/settings/AppearanceSettings";
 import { useAppearance } from "@/features/settings/useAppearance";
 import { cn } from "@/lib/utils";
 
-type Page = "projects" | "settings";
+type Page = "projects" | "missions" | "settings";
 
 const NAV: { id: Page; label: string; Icon: typeof FolderIcon }[] = [
   { id: "projects", label: "Projects", Icon: FolderIcon },
+  { id: "missions", label: "Missions", Icon: RocketLaunchIcon },
   { id: "settings", label: "Settings", Icon: Cog6ToothIcon },
 ];
 
@@ -45,6 +47,8 @@ export function App() {
         </nav>
         {page === "projects" ? (
           <ProjectsPage />
+        ) : page === "missions" ? (
+          <MissionsPage />
         ) : (
           <main className="min-w-0 flex-1 overflow-y-auto p-8">
             <h1 className="mb-6 text-2xl font-semibold">Appearance</h1>
