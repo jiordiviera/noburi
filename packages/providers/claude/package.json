@@ -1,0 +1,14 @@
+{
+  "name": "@noburi/provider-claude",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "0.3.310",
+    "zod": "4.6.7"
+  }
+}

@@ -9,6 +9,8 @@
     "start": "vpx src/main.ts"
   },
   "dependencies": {
-    "@noburi/core": "workspace:*"
+    "@noburi/core": "workspace:*",
+    "@noburi/provider-claude": "workspace:*",
+    "zod": "4.6.7"
   }
 }

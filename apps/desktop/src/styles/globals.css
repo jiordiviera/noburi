@@ -12,6 +12,10 @@
 @import "@fontsource-variable/jetbrains-mono";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource-variable/pixelify-sans";
+@import "@fontsource-variable/mona-sans";
+@import "@fontsource/monaspace-neon/400.css";
+@import "@fontsource-variable/source-serif-4";
+@import "@fontsource-variable/fira-code";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -20,6 +24,10 @@
   --font-sans: var(--nb-font-ui, "Geist Variable", ui-sans-serif, system-ui, sans-serif);
   --font-heading: var(--nb-font-ui, "Geist Variable", ui-sans-serif, system-ui, sans-serif);
   --font-mono: var(--nb-font-code, "Geist Mono Variable", ui-monospace, monospace);
+  --font-reading: var(
+    --nb-font-reading,
+    var(--nb-font-ui, "Geist Variable", ui-sans-serif, sans-serif)
+  );
   --font-pixel: "Pixelify Sans Variable", sans-serif;
 
   --color-background: var(--background);

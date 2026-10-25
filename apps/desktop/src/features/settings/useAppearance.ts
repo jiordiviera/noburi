@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { applyAppearance, parseAppearance, type Appearance } from "@noburi/ui";
+import { applyAppearance, parseAppearance, ThemeId, withTheme, type Appearance } from "@noburi/ui";
 
 // Per-device preference. Kept in localStorage until the runtime settings store exists.
 const STORAGE_KEY = "noburi.appearance.v1";
@@ -31,7 +31,11 @@ export function useAppearance() {
       setAppearance((a) => parseAppearance({ ...a, [key]: value }, a)),
     [],
   );
+  const selectTheme = useCallback((value: unknown) => {
+    const id = ThemeId.safeParse(value);
+    if (id.success) setAppearance((a) => withTheme(a, id.data));
+  }, []);
   const reset = useCallback(() => setAppearance(parseAppearance({})), []);
 
-  return { appearance, update, reset };
+  return { appearance, update, selectTheme, reset };
 }

@@ -1,11 +1,14 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
+import { json, type ApiHandler } from "./api.ts";
 
 export interface RuntimeServerOptions {
   /** Ephemeral secret shared with the desktop shell at launch. */
   token: string;
   /** Origins allowed to call the API (the desktop webview, the Vite dev server). */
   allowedOrigins: readonly string[];
+  /** Application routes, behind the origin and token checks. */
+  api?: ApiHandler;
 }
 
 function tokenMatches(header: string | undefined, token: string): boolean {
@@ -15,13 +18,8 @@ function tokenMatches(header: string | undefined, token: string): boolean {
   return given.length === expected.length && timingSafeEqual(given, expected);
 }
 
-function json(res: ServerResponse, status: number, body: unknown): void {
-  res.writeHead(status, { "content-type": "application/json" });
-  res.end(JSON.stringify(body));
-}
-
 export function createRuntimeServer(options: RuntimeServerOptions): Server {
-  return createServer((req: IncomingMessage, res: ServerResponse) => {
+  return createServer(async (req: IncomingMessage, res: ServerResponse) => {
     const origin = req.headers.origin;
     if (origin !== undefined && !options.allowedOrigins.includes(origin)) {
       return json(res, 403, { error: "origin not allowed" });
@@ -39,9 +37,11 @@ export function createRuntimeServer(options: RuntimeServerOptions): Server {
     if (!tokenMatches(req.headers.authorization, options.token)) {
       return json(res, 401, { error: "unauthorized" });
     }
-    if (req.method === "GET" && req.url === "/health") {
+    const url = new URL(req.url ?? "/", "http://127.0.0.1");
+    if (req.method === "GET" && url.pathname === "/health") {
       return json(res, 200, { ok: true, version: "0.1.0" });
     }
+    if (options.api && (await options.api(req, res, url))) return;
     return json(res, 404, { error: "not found" });
   });
 }

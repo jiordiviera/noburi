@@ -2,7 +2,9 @@
 
 **Your agents, at work.** A local-first, open source desktop studio for directing Claude Code agents from a cozy pixel office.
 
-> Status: early scaffold. Nothing below the "Develop" section is usable yet. See `docs/DECISIONS.md`.
+> Status: early alpha. Working today: finding your local Claude Code CLI projects and sessions, reading their
+> history, and continuing or forking a session with approvals. Missions and the pixel office come next.
+> See `docs/DECISIONS.md`.
 
 ## Develop
 
@@ -14,8 +16,8 @@ pnpm check       # format, lint and type-check in one pass (vp check)
 pnpm fix         # format and apply safe lint fixes
 pnpm test        # unit tests (vp test)
 pnpm build
-pnpm dev:runtime # local API on 127.0.0.1, prints its port and session token
-pnpm dev:desktop # UI on http://localhost:1420
+pnpm dev         # runtime + desktop UI together, wired with a fresh session token
+pnpm dev:runtime # runtime alone: local API on 127.0.0.1, prints its port and session token
 ```
 
 ## Layout
@@ -26,6 +28,7 @@ apps/runtime      local orchestration API (loopback only, token-protected)
 packages/core     domain schemas, task state machine, event schema
 packages/ui       Cozy Pixel tokens, themes and appearance settings
 packages/assets   avatar pack manifest schema
+packages/providers/claude  Claude Code adapter: session discovery, transcripts, runs (Agent SDK)
 assets/brand      logo and app icon sources
 docs              design and decisions
 ```
