@@ -14,9 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { runtime, runtimeConfigured, type Agent, type MissionView } from "@/lib/runtime";
+import {
+  runtime,
+  runtimeConfigured,
+  type Agent,
+  type AgentEnvironment,
+  type MissionView,
+} from "@/lib/runtime";
 import { cn } from "@/lib/utils";
 import { relativeTime } from "../projects/time";
+import { DEFAULT_ENVIRONMENT } from "@noburi/core";
+import { EnvironmentPicker } from "./EnvironmentPicker";
 import { MissionDetail } from "./MissionDetail";
 import { MISSION_STATUS } from "./status";
 
@@ -171,6 +179,7 @@ function NewMission({
   const [workspacePath, setWorkspacePath] = useState(folders[0] ?? "");
   const [objective, setObjective] = useState("");
   const [budget, setBudget] = useState("");
+  const [environment, setEnvironment] = useState<AgentEnvironment>(DEFAULT_ENVIRONMENT);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -183,6 +192,7 @@ function NewMission({
         workspacePath: workspacePath.trim(),
         objective,
         ...(Number.isFinite(budgetTokens) && budgetTokens > 0 ? { budgetTokens } : {}),
+        environment,
       });
       onCreated(view.mission.id);
     } catch (e) {
@@ -246,6 +256,10 @@ function NewMission({
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">What agents inherit from your Claude Code</span>
+          <EnvironmentPicker value={environment} onChange={setEnvironment} />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="mission-budget">Token budget (optional)</Label>

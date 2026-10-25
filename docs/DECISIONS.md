@@ -219,3 +219,17 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   timeout, output between markers) and merges it in front of the launcher's; about 2 s on a zsh setup.
 - Data stays in `~/.local/share/noburi/` for both dev and packaged builds.
 - Not done: signing, update channel, macOS/Windows packages.
+
+## D17 — What mission agents inherit from Claude Code
+
+- Missions run unattended, so a global hook or plugin made for an interactive terminal can derail them. Seen in
+  real runs: a user-level plugin hook pushed agents into four unrelated `Skill` calls.
+- Each mission stores an `AgentEnvironment` (`agent_env` column, JSON): user settings, project settings, hooks,
+  MCP servers, and skills (`none` / `default` / `all`). It maps onto SDK options: `settingSources`,
+  `settings.disableAllHooks`, `strictMcpConfig`, `skills`.
+- Presets: **Project only** (default: the project's `.claude/` settings and CLAUDE.md, nothing from `~/.claude`),
+  **Isolated** (nothing), **Like my terminal** (everything `claude` loads). Any other mix shows as Custom.
+- The environment can change only while the mission is a draft. Missions created before this column show as
+  "Like my terminal", which is what they actually ran with.
+- Skills are a visibility filter, not a sandbox; tool approvals still apply in every preset.
+- Checked with a real Isolated mission in a throwaway repo: completed, tests passed, no `Skill` call.
