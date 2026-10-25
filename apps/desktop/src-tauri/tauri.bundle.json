@@ -1,0 +1,19 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "build": {
+    "beforeBuildCommand": "pnpm build && node ../../scripts/bundle-runtime.mjs"
+  },
+  "bundle": {
+    "resources": {
+      "runtime/node": "runtime/node",
+      "runtime/runtime.mjs": "runtime/runtime.mjs",
+      "runtime/NODE_LICENSE": "runtime/NODE_LICENSE"
+    },
+    "shortDescription": "Your agents, at work.",
+    "longDescription": "Local-first desktop studio for directing Claude Code agents. Requires the Claude Code CLI.",
+    "category": "DeveloperTool",
+    "license": "Apache-2.0",
+    "publisher": "Noburi contributors",
+    "homepage": "https://github.com/jiordiviera/noburi"
+  }
+}

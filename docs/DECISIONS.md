@@ -200,3 +200,19 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   cancelled; a call already running is never cut off. The screen warns from 80 %.
 - Schema change handled by an idempotent migration (`budget_tokens` column added if missing).
 - Not counted yet: sessions continued from Projects (their runs are not persisted).
+
+## D16 — Linux package
+
+- `pnpm package:linux` runs `tauri build` with `src-tauri/tauri.bundle.json`, producing a `.deb` and an AppImage.
+  The bundle config is separate so `tauri dev` and the CI shell job do not need the generated runtime files.
+- `scripts/bundle-runtime.mjs` (run before the build) bundles `apps/runtime` and its dependencies into one
+  `runtime.mjs` with esbuild, and downloads the official Node.js 24.21.0 binary from nodejs.org, checked against
+  its pinned SHA-256 (release chosen over six weeks old). Node's licence ships next to it.
+- In release builds the shell runs `runtime/node runtime/runtime.mjs` from the app's resources, with
+  `NOBURI_PACKAGED=1`; development still runs the workspace runtime through pnpm.
+- Claude Code is **not** bundled: the SDK's own CLI binary is 291 MB per platform. The packaged runtime uses the
+  user's installed `claude` (`NOBURI_CLAUDE_BIN`, then PATH, then `~/.local/bin`, `~/.claude/local`,
+  `/usr/local/bin`). The SDK version (0.3.310, CLI 2.1.310) and the installed CLI can differ; this is a known
+  risk to watch.
+- Data stays in `~/.local/share/noburi/` for both dev and packaged builds.
+- Not done: signing, update channel, macOS/Windows packages.

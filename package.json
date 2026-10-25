@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "desktop": "pnpm --filter @noburi/desktop tauri dev",
+    "package:linux": "pnpm --filter @noburi/desktop package",
     "dev:runtime": "pnpm --filter @noburi/runtime dev",
     "dev:desktop": "pnpm --filter @noburi/desktop dev",
     "check": "vp check --deny-warnings",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "26.6.5",
+    "esbuild": "0.28.2",
     "typescript": "6.0.3",
     "vite-plus": "catalog:"
   },
