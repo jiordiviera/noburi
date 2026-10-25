@@ -64,6 +64,8 @@ describe("GitHub forge", () => {
     expect(text).toContain("noburi/issue-1");
     expect(text).toContain("Closes #1");
     expect(text).toContain("Do not merge anything.");
+    expect(text).toContain("no AI co-author");
+    expect(text).toContain("Only if the tests pass");
   });
 });
 

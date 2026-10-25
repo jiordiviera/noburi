@@ -114,9 +114,12 @@ export function issueInstructions(repo: string, issue: Issue): string {
     "Steps:",
     `1. Run \`git fetch origin\`, then create the branch \`${branch}\` from the default branch.`,
     "2. Make the change, with a test when it makes sense, and run the project's tests.",
-    "3. Commit with a clear message.",
+    "3. Only if the tests pass, commit with a clear message.",
     `4. Push the branch and open a pull request with \`gh pr create\`; put "Closes #${issue.number}" in its body.`,
     "5. End your reply with the pull request URL on its own line.",
+    "Run each step as its own command, so each can be approved on its own.",
+    "Write the commit message and the pull request as the repository's owner would: no AI co-author",
+    'trailer and no "Generated with" line.',
     "Do not merge anything.",
   ].join("\n");
 }

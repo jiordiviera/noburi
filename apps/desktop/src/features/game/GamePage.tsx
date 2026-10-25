@@ -110,6 +110,8 @@ export function GamePage() {
     { kind: "issue"; issue: Issue } | { kind: "agent" } | { kind: "tray" } | null
   >(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  // Set while a "give" request is in flight, so a double click cannot send it twice.
+  const [assigning, setAssigning] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const { walker, go, moving } = useWalker(SPOTS.devSeat);
 
@@ -214,12 +216,16 @@ export function GamePage() {
 
   const assign = useCallback(
     async (issue: Issue) => {
+      if (assigning) return;
       setActionError(null);
+      setAssigning(true);
       try {
         await runtime.workOnIssue(repo, issue.number);
       } catch (e) {
         setActionError(e instanceof Error ? e.message : "The developer could not take this issue.");
         return;
+      } finally {
+        setAssigning(false);
       }
       setDialog(null);
       // The mission is already running; walking to the board to fetch the card is staged.
@@ -229,14 +235,14 @@ export function GamePage() {
       });
       setMissions((await runtime.missions()).missions);
     },
-    [repo, go, walker.pos],
+    [repo, go, walker.pos, assigning],
   );
 
   const onDrop = (event: DragEvent) => {
     event.preventDefault();
     const n = Number(event.dataTransfer.getData("text/plain"));
     const issue = issues.find((i) => i.number === n);
-    if (issue && !busy) void assign(issue);
+    if (issue && !busy && !assigning) void assign(issue);
   };
 
   const takenBy = new Set(
@@ -482,8 +488,12 @@ export function GamePage() {
                   The developer works on a branch in Noburi&apos;s own clone. Pushing and opening
                   the pull request wait for your approval.
                 </p>
-                <Button disabled={busy} onClick={() => void assign(dialog.issue)}>
-                  {busy ? "The developer is busy" : "Give to the developer"}
+                <Button disabled={busy || assigning} onClick={() => void assign(dialog.issue)}>
+                  {busy
+                    ? "The developer is busy"
+                    : assigning
+                      ? "Cloning the repository…"
+                      : "Give to the developer"}
                 </Button>
               </DialogFooter>
             </>
