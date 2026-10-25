@@ -233,3 +233,14 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   "Like my terminal", which is what they actually ran with.
 - Skills are a visibility filter, not a sandbox; tool approvals still apply in every preset.
 - Checked with a real Isolated mission in a throwaway repo: completed, tests passed, no `Skill` call.
+
+## D18 — Noburi becomes a management game
+
+- Reviewed with the author: as a dashboard, Noburi repeated what Claude Code and its desktop app already do.
+  It is now a management game where the player is the project lead and the staff are real Claude Code agents.
+  See `docs/GAME_DESIGN.md`.
+- The "never fake" rule is split: agent state, actions, hand-offs, GitHub objects and costs must be real; idle
+  animations, walking paths and decoration may be staged, as long as they never show a state that is not true.
+- Tickets and deliverables come from GitHub through the user's `gh` login. Reading never asks, every write asks,
+  merging stays with the player.
+- Test repository: `jiordiviera/noburi-playground` (private), with four sample issues.
