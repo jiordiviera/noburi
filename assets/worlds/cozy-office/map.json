@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "id": "cozy-office",
+  "name": "Cozy Office",
+  "tileSize": 16,
+  "width": 20,
+  "height": 10,
+  "background": "#101820",
+  "backgroundImage": "background.svg",
+  "deskSprite": "objects/desk.svg",
+  "agentSlots": [
+    {
+      "id": "developer",
+      "x": 52,
+      "y": 96
+    },
+    {
+      "id": "reviewer",
+      "x": 142,
+      "y": 96
+    },
+    {
+      "id": "researcher",
+      "x": 232,
+      "y": 96
+    }
+  ]
+}

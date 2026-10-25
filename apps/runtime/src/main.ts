@@ -1,0 +1,16 @@
+import { randomBytes } from "node:crypto";
+import { createRuntimeServer, listenLoopback } from "./server.ts";
+
+const token = process.env.NOBURI_RUNTIME_TOKEN ?? randomBytes(32).toString("base64url");
+const port = Number(process.env.NOBURI_RUNTIME_PORT ?? 0);
+const allowedOrigins = (process.env.NOBURI_ALLOWED_ORIGINS ?? "http://localhost:1420,tauri://localhost,http://tauri.localhost").split(",");
+
+const server = createRuntimeServer({ token, allowedOrigins });
+const boundPort = await listenLoopback(server, port);
+
+// The desktop shell reads this line from stdout to connect; the token is never logged elsewhere.
+process.stdout.write(`${JSON.stringify({ event: "runtime.ready", port: boundPort, token })}\n`);
+
+for (const signal of ["SIGINT", "SIGTERM"] as const) {
+  process.on(signal, () => server.close(() => process.exit(0)));
+}

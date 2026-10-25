@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" rx="224" fill="#101820"/><g>
+  <!-- Friendly companion shell -->
+  <rect x="168" y="282" width="688" height="598" rx="190" fill="#F0BE79"/>
+  <rect x="192" y="302" width="640" height="552" rx="171" fill="#26323D"/>
+  <rect x="222" y="338" width="580" height="461" rx="140" fill="#F6F0E5"/>
+  <!-- Companion side ears -->
+  <rect x="143" y="474" width="88" height="150" rx="36" fill="#F0BE79"/>
+  <rect x="793" y="474" width="88" height="150" rx="36" fill="#F0BE79"/>
+  <!-- Sprout: growth, helpful agents -->
+  <rect x="488" y="245" width="48" height="91" rx="17" fill="#7DD3B0"/>
+  <path d="M514 260 C451 267 393 249 376 176 C435 156 492 190 514 260 Z" fill="#7DD3B0"/>
+  <path d="M510 260 C575 265 633 239 649 166 C588 150 536 185 510 260 Z" fill="#7DD3B0"/>
+  <!-- Eyes and friendly smile -->
+  <rect x="350" y="511" width="70" height="112" rx="31" fill="#101820"/>
+  <rect x="603" y="511" width="70" height="112" rx="31" fill="#101820"/>
+  <path d="M461 665 C481 688 543 689 565 665" fill="none" stroke="#101820" stroke-width="27" stroke-linecap="round"/>
+  <!-- Tiny honey cheek details -->
+  <rect x="282" y="630" width="49" height="18" rx="9" fill="#F0BE79" opacity=".9"/>
+  <rect x="693" y="630" width="49" height="18" rx="9" fill="#F0BE79" opacity=".9"/>
+  </g></svg>

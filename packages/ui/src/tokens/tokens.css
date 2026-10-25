@@ -1,0 +1,37 @@
+:root {
+  --nb-night: #101820;
+  --nb-slate: #26323d;
+  --nb-surface-2: #1b252e;
+  --nb-border: #34424e;
+  --nb-honey: #f0be79;
+  --nb-mint: #7dd3b0;
+  --nb-cream: #f6f0e5;
+  --nb-muted: #a7b3be;
+  --nb-error: #f2867a;
+  --nb-focus: #8ec5ff;
+
+  --nb-space-1: 4px;
+  --nb-space-2: 8px;
+  --nb-space-3: 12px;
+  --nb-space-4: 16px;
+  --nb-space-6: 24px;
+
+  --nb-radius-sm: 10px;
+  --nb-radius-md: 12px;
+  --nb-radius-lg: 14px;
+
+  --nb-font-sans: "Geist", system-ui, sans-serif;
+  --nb-font-mono: "Geist Mono", ui-monospace, monospace;
+  --nb-font-pixel: "Pixelify Sans", sans-serif;
+
+  color-scheme: dark;
+}
+
+:focus-visible {
+  outline: 3px solid var(--nb-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
