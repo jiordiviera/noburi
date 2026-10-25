@@ -2,15 +2,25 @@ import { z } from "zod";
 
 export const EventType = z.enum([
   "mission.created",
+  "mission.planned",
+  "mission.started",
   "task.started",
   "agent.status.changed",
+  "agent.message",
   "tool.started",
   "tool.completed",
   "approval.requested",
+  "approval.resolved",
   "usage.updated",
   "artifact.created",
+  "task.succeeded",
   "task.failed",
+  "task.cancelled",
+  "task.interrupted",
   "mission.completed",
+  "mission.failed",
+  "mission.cancelled",
+  "mission.interrupted",
 ]);
 export type EventType = z.infer<typeof EventType>;
 

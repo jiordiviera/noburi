@@ -30,7 +30,7 @@ export function createRuntimeServer(options: RuntimeServerOptions): Server {
     }
     if (req.method === "OPTIONS") {
       res.setHeader("access-control-allow-headers", "authorization, content-type");
-      res.setHeader("access-control-allow-methods", "GET, POST");
+      res.setHeader("access-control-allow-methods", "GET, POST, PUT, DELETE");
       res.writeHead(204);
       return res.end();
     }

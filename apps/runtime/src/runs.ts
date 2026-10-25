@@ -18,6 +18,7 @@ export interface CreateRunInput {
   cwd: string;
   resumeSessionId?: string | undefined;
   fork?: boolean | undefined;
+  model?: string | undefined;
 }
 
 interface Run {

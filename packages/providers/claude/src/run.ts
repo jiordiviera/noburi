@@ -167,6 +167,8 @@ export function mapSdkMessage(message: SDKMessage): RunEvent[] {
 export async function* runClaude(options: ClaudeRunOptions): AsyncGenerator<RunEvent> {
   const abortController = new AbortController();
   const onAbort = () => abortController.abort();
+  // A stop requested before this point must still stop the run: the listener alone would miss it.
+  if (options.signal.aborted) return;
   options.signal.addEventListener("abort", onAbort, { once: true });
 
   const canUseTool = async (

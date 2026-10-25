@@ -3,7 +3,8 @@
 **Your agents, at work.** A local-first, open source desktop studio for directing Claude Code agents from a cozy pixel office.
 
 > Status: early alpha. Working today: finding your local Claude Code CLI projects and sessions, reading their
-> history, and continuing or forking a session with approvals. Missions and the pixel office come next.
+> history, continuing or forking a session with approvals, and missions of up to three tasks run by Claude
+> Code agents, saved locally in SQLite. The pixel office comes next.
 > See `docs/DECISIONS.md`.
 
 ## Develop

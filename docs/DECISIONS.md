@@ -149,3 +149,24 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - CSP for packaged builds allows only the app itself, the IPC bridge and `http://127.0.0.1:*`.
 - App icons in `src-tauri/icons` are generated with `tauri icon` from `assets/brand/source/noburi-app-icon.svg`.
 - CI compiles and tests the Rust shell on Ubuntu (`cargo test --locked`) with the Tauri system libraries.
+
+## D13 — Missions and persistence
+
+- Storage: `node:sqlite` (built into Node 22+, no native module to compile), one file per user:
+  `$XDG_DATA_HOME/noburi/noburi.db` on Linux, `~/Library/Application Support/Noburi` on macOS,
+  `%APPDATA%\\Noburi` on Windows; `NOBURI_DATA_DIR` overrides. Node prints an "experimental" warning for it.
+- Tables: missions, tasks, events (sequence per mission), artifacts. Rows read back are validated with the
+  `@noburi/core` schemas. Every state change and event is written before it is broadcast.
+- On start, `reconcileAfterRestart()` marks running missions and tasks INTERRUPTED. Nothing restarts by itself.
+- Profiles: Developer (sonnet), Architect (opus), Researcher (haiku). Models are Claude Code aliases, so
+  they follow what the user's Claude Code and plan resolve them to.
+- A new mission starts as a DRAFT with a one-task plan the user edits: 1–3 tasks, a known agent each, and
+  dependencies only on earlier tasks (acyclic by construction). The plan is not LLM-generated yet.
+- Scheduler: one task at a time, started only when all its dependencies SUCCEEDED; transitions go through
+  `assertTransition`. Each task is a new Claude Code session in the workspace, with a prompt that states the
+  role, the objective, results of the tasks it depends on, and asks for an honest summary.
+- A failed task fails the mission and cancels the tasks after it. Stop asks the run to cancel and the mission
+  becomes CANCELLED only once the run has ended.
+- Deliverables: each task's own summary, plus `git status --short` and `git diff --stat HEAD` of the workspace
+  when it is a repository (read-only). Nothing is committed or merged.
+- Fixed along the way: a stop requested before a run had started was ignored by `runClaude`.
