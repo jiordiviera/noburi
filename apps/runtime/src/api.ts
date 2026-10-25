@@ -12,6 +12,7 @@ import {
 } from "@noburi/provider-claude";
 import { AgentEnvironment } from "@noburi/core";
 import { AGENTS, agentById } from "./agents.ts";
+import { ForgeError, issueInstructions, issueRef, REPO, type GitHubForge } from "./forge.ts";
 import { MissionError, type MissionService } from "./missions.ts";
 import type { RunManager } from "./runs.ts";
 import type { Store } from "./store.ts";
@@ -22,6 +23,8 @@ export interface ApiDeps {
   runs: RunManager;
   /** Missions are optional so session-only setups and tests can omit them. */
   missions?: { service: MissionService; store: Store };
+  /** GitHub issues as tickets; optional so tests and setups without `gh` can omit it. */
+  forge?: GitHubForge;
   fs?: DiscoveryFs;
   now?: () => number;
 }
@@ -112,6 +115,11 @@ const PlanBody = z
     });
   });
 
+const WorkBody = z.strictObject({
+  repo: z.string().regex(REPO, "repo must be owner/name"),
+  number: z.number().int().positive(),
+});
+
 function sse(res: ServerResponse): void {
   res.writeHead(200, {
     "content-type": "text/event-stream",
@@ -192,6 +200,46 @@ export function createApi(deps: ApiDeps): ApiHandler {
     if (method === "GET" && url.pathname === "/usage" && deps.missions) {
       json(res, 200, usageSummary(deps.missions.store));
       return true;
+    }
+
+    if (parts[0] === "forge" && deps.forge) {
+      const forge = deps.forge;
+      if (method === "GET" && url.pathname === "/forge/issues") {
+        const repo = url.searchParams.get("repo") ?? "";
+        if (!REPO.test(repo)) throw new HttpError(400, "repo must be owner/name");
+        json(res, 200, { repo, issues: await forge.listIssues(repo) });
+        return true;
+      }
+
+      // An agent takes the issue: one developer task in a clone of the repository, started now.
+      if (method === "POST" && url.pathname === "/forge/work" && deps.missions) {
+        const body = WorkBody.safeParse(await readJson(req));
+        if (!body.success)
+          throw new HttpError(400, body.error.issues[0]?.message ?? "invalid body");
+        const { repo, number } = body.data;
+        const ref = issueRef(repo, number);
+        const { service } = deps.missions;
+        if (service.list().some((m) => m.issueRef === ref && m.status === "RUNNING"))
+          throw new HttpError(409, "an agent is already working on this issue", "already_working");
+        const issue = await forge.issue(repo, number);
+        const workspacePath = await forge.workspace(repo);
+        const created = service.create({
+          workspacePath,
+          title: `#${issue.number} ${issue.title}`.slice(0, 120),
+          objective: issue.title,
+          issueRef: ref,
+        });
+        service.setPlan(created.mission.id, [
+          {
+            title: `#${issue.number} ${issue.title}`.slice(0, 120),
+            instructions: issueInstructions(repo, issue),
+            agentId: "developer",
+            dependsOn: [],
+          },
+        ]);
+        json(res, 201, service.start(created.mission.id));
+        return true;
+      }
     }
 
     if (parts[0] === "missions" && deps.missions) {
@@ -314,6 +362,10 @@ export function createApi(deps: ApiDeps): ApiHandler {
     try {
       return await route(req, res, url);
     } catch (error) {
+      if (error instanceof ForgeError) {
+        json(res, 502, { error: error.message, code: "forge_failed" });
+        return true;
+      }
       if (error instanceof MissionError) {
         json(res, error.status, { error: error.message, code: error.code });
         return true;

@@ -244,3 +244,21 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
 - Tickets and deliverables come from GitHub through the user's `gh` login. Reading never asks, every write asks,
   merging stays with the player.
 - Test repository: `jiordiviera/noburi-playground` (private), with four sample issues.
+
+## D19 — Game scene prototype
+
+- The Office is now the first screen: the cozy-office background, a board of the repository's open GitHub
+  issues, the developer's desk and the player's desk with a "To review" tray. The older screens stay for now.
+- Rendering stays in the DOM (pixelated images, absolute positions at a whole-number zoom) rather than PixiJS or
+  Phaser: one character and a board do not need a game engine yet. Revisit when the office gets busier.
+- Dropping a card on the developer (or "Give to the developer") calls `POST /forge/work`: the runtime reads the
+  issue with `gh`, clones the repository once into `workspaces/` next to the database, and starts a
+  one-task mission linked to the issue (`issue_ref`). One running mission per issue.
+- The task asks for a branch `noburi/issue-<n>`, tests, a commit, a push and a pull request with
+  "Closes #<n>", and forbids merging. Push and pull request are Bash calls, so each waits for the player's "!"
+  approval.
+- Staged: walking to the board and back, carrying the card, taking the finished work to the player's desk,
+  idle trips to the coffee machine and the window (off with reduced motion). Real: the label, bubbles, tool
+  text, approvals and the tray's contents.
+- Repository names are checked against `owner/name` before any command, and "." or ".." names are refused so a
+  clone can never land outside `workspaces/`.

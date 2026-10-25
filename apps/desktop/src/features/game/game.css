@@ -1,0 +1,36 @@
+/* Staged walk: a two-step bob while a character moves between spots. */
+@keyframes game-walk {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 calc(-1px * var(--nb-office-scale, 3));
+  }
+}
+
+.game-walking {
+  animation: game-walk 0.3s steps(2, end) infinite;
+}
+
+.game-facing-left {
+  scale: -1 1;
+}
+
+/* Cards and the "!" pulse, to draw the player's eye to what needs them. */
+@keyframes game-pulse {
+  50% {
+    translate: 0 calc(-1px * var(--nb-office-scale, 3));
+  }
+}
+
+.game-needs-you {
+  animation: game-pulse 0.8s steps(2, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-walking,
+  .game-needs-you {
+    animation: none;
+  }
+}

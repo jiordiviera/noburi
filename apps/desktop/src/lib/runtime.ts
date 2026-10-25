@@ -61,6 +61,8 @@ export interface Mission {
   finishedAt: string | null;
   budgetTokens: number | null;
   environment: AgentEnvironment;
+  /** The GitHub issue this mission works on, as "owner/name#number". */
+  issueRef: string | null;
 }
 
 export interface MissionTask {
@@ -106,6 +108,15 @@ export interface PlanTask {
   instructions: string;
   agentId: string;
   dependsOn: number[];
+}
+
+/** An open GitHub issue: a card on the office board. */
+export interface Issue {
+  number: number;
+  title: string;
+  body: string;
+  url: string;
+  labels: { name: string; color: string }[];
 }
 
 export interface UsageLine {
@@ -241,6 +252,11 @@ export const runtime = {
   startMission: (id: string) => call<MissionView>(`/missions/${id}/start`, { method: "POST" }),
   cancelMission: (id: string) => call<MissionView>(`/missions/${id}/cancel`, { method: "POST" }),
   deleteMission: (id: string) => call<{ ok: true }>(`/missions/${id}`, { method: "DELETE" }),
+  issues: (repo: string) =>
+    call<{ repo: string; issues: Issue[] }>(`/forge/issues?repo=${encodeURIComponent(repo)}`),
+  /** The developer takes the issue: a mission in a clone of the repository, started at once. */
+  workOnIssue: (repo: string, number: number) =>
+    call<MissionView>("/forge/work", { method: "POST", body: JSON.stringify({ repo, number }) }),
   streamMission: (id: string, onEvent: (event: MissionEvent) => void, signal: AbortSignal) =>
     readEvents<MissionEvent>(`/missions/${id}/events?after=0`, onEvent, signal),
 };
