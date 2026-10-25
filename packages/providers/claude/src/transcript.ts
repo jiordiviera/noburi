@@ -6,7 +6,8 @@ export type TranscriptPart =
 
 export interface TranscriptEntry {
   id: string;
-  role: "user" | "assistant" | "system";
+  /** "tool" holds results whose call is not in the loaded page. */
+  role: "user" | "assistant" | "system" | "tool";
   timestamp: string | null;
   /** True for messages produced inside a sub-agent rather than the main conversation. */
   fromSubagent: boolean;
@@ -96,21 +97,59 @@ function toParts(content: unknown): TranscriptPart[] {
   return parts;
 }
 
+/**
+ * Builds the display transcript. Claude Code stores tool results as "user" messages; they are not
+ * something the person typed, so each result is placed right after the tool call it answers, and
+ * consecutive Claude messages are merged into one turn. A result whose call is on an earlier page
+ * stays on its own with the "tool" role.
+ */
 export function normalizeTranscript(messages: readonly RawSessionMessage[]): TranscriptEntry[] {
   const entries: TranscriptEntry[] = [];
+  const callOwner = new Map<string, TranscriptEntry>();
+
   for (const m of messages) {
     const content = isRecord(m.message) ? m.message["content"] : undefined;
     const parts = toParts(content);
     if (parts.length === 0) continue;
     const raw: unknown = m;
     const timestamp = isRecord(raw) ? str(raw["timestamp"]) : null;
-    entries.push({
-      id: m.uuid,
-      role: m.type,
-      timestamp,
-      fromSubagent: m.parent_tool_use_id !== null,
-      parts,
-    });
+    const fromSubagent = m.parent_tool_use_id !== null;
+
+    const onlyResults = parts.every((p) => p.kind === "tool_result");
+    if (m.type === "user" && onlyResults) {
+      const orphans: TranscriptPart[] = [];
+      for (const part of parts) {
+        const owner = part.kind === "tool_result" ? callOwner.get(part.toolUseId) : undefined;
+        if (!owner) {
+          orphans.push(part);
+          continue;
+        }
+        const callIndex = owner.parts.findIndex(
+          (p) =>
+            p.kind === "tool_use" && part.kind === "tool_result" && p.toolUseId === part.toolUseId,
+        );
+        owner.parts.splice(callIndex + 1, 0, part);
+      }
+      if (orphans.length > 0) {
+        entries.push({ id: m.uuid, role: "tool", timestamp, fromSubagent, parts: orphans });
+      }
+      continue;
+    }
+
+    const previous = entries.at(-1);
+    let entry: TranscriptEntry;
+    if (
+      m.type === "assistant" &&
+      previous?.role === "assistant" &&
+      previous.fromSubagent === fromSubagent
+    ) {
+      previous.parts.push(...parts);
+      entry = previous;
+    } else {
+      entry = { id: m.uuid, role: m.type, timestamp, fromSubagent, parts };
+      entries.push(entry);
+    }
+    for (const part of parts) if (part.kind === "tool_use") callOwner.set(part.toolUseId, entry);
   }
   return entries;
 }

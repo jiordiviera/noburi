@@ -6,6 +6,14 @@ const ROLE_LABEL: Record<TranscriptEntry["role"], string> = {
   user: "You",
   assistant: "Claude",
   system: "System",
+  tool: "Tool",
+};
+
+const ROLE_COLOR: Record<TranscriptEntry["role"], string> = {
+  user: "text-primary",
+  assistant: "text-success",
+  system: "text-muted-foreground",
+  tool: "text-info",
 };
 
 export function TranscriptView({ entries }: { entries: TranscriptEntry[] }) {
@@ -16,7 +24,7 @@ export function TranscriptView({ entries }: { entries: TranscriptEntry[] }) {
           <span
             className={cn(
               "flex h-8 w-14 shrink-0 items-center justify-center rounded-lg bg-accent text-[11px] font-semibold",
-              entry.role === "user" ? "text-primary" : "text-success",
+              ROLE_COLOR[entry.role],
             )}
           >
             {entry.fromSubagent ? "Agent" : ROLE_LABEL[entry.role]}
@@ -52,7 +60,8 @@ function Part({ part }: { part: TranscriptPart }) {
   return (
     <div
       className={cn(
-        "rounded-lg border-l-2 bg-card px-3 py-1.5 font-mono text-xs text-muted-foreground",
+        // Indented under the call it answers.
+        "ml-5 rounded-lg border-l-2 bg-card px-3 py-1.5 font-mono text-xs break-words text-muted-foreground",
         part.isError ? "border-destructive" : "border-border",
       )}
     >

@@ -48,19 +48,64 @@ describe("normalizeTranscript", () => {
     },
   ];
 
-  it("keeps text, tool calls and results, and drops thinking", () => {
+  it("puts each tool result right after its call, in Claude's turn", () => {
     const entries = normalizeTranscript(messages);
-    expect(entries.map((e) => e.id)).toEqual(["u1", "a1", "u2"]);
+    expect(entries.map((e) => [e.id, e.role])).toEqual([
+      ["u1", "user"],
+      ["a1", "assistant"],
+    ]);
     expect(entries[1]?.parts).toEqual([
       { kind: "text", text: "Running them." },
       { kind: "tool_use", toolUseId: "t1", name: "Bash", summary: "pnpm test --run" },
+      { kind: "tool_result", toolUseId: "t1", text: "1 failed", isError: true },
     ]);
-    expect(entries[2]?.parts[0]).toEqual({
-      kind: "tool_result",
-      toolUseId: "t1",
-      text: "1 failed",
-      isError: true,
-    });
+  });
+
+  it("merges consecutive Claude messages into one turn", () => {
+    const entries = normalizeTranscript([
+      ...messages,
+      {
+        type: "assistant",
+        uuid: "a3",
+        parent_tool_use_id: null,
+        message: {
+          content: [{ type: "tool_use", id: "t2", name: "Read", input: { file_path: "/x" } }],
+        },
+      },
+      {
+        type: "user",
+        uuid: "u3",
+        parent_tool_use_id: null,
+        message: { content: [{ type: "tool_result", tool_use_id: "t2", content: "ok" }] },
+      },
+      {
+        type: "assistant",
+        uuid: "a4",
+        parent_tool_use_id: null,
+        message: { content: [{ type: "text", text: "Fixed." }] },
+      },
+    ]);
+    expect(entries.map((e) => e.id)).toEqual(["u1", "a1"]);
+    expect(entries[1]?.parts.map((p) => p.kind)).toEqual([
+      "text",
+      "tool_use",
+      "tool_result",
+      "tool_use",
+      "tool_result",
+      "text",
+    ]);
+  });
+
+  it("labels a result whose call is on an earlier page as a tool entry, not the user", () => {
+    const entries = normalizeTranscript([
+      {
+        type: "user",
+        uuid: "u9",
+        parent_tool_use_id: null,
+        message: { content: [{ type: "tool_result", tool_use_id: "elsewhere", content: "done" }] },
+      },
+    ]);
+    expect(entries).toEqual([expect.objectContaining({ id: "u9", role: "tool" })]);
   });
 
   it("ignores malformed messages instead of throwing", () => {
