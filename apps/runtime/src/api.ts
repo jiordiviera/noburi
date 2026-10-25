@@ -10,6 +10,7 @@ import {
   type DiscoveryFs,
   type SessionSource,
 } from "@noburi/provider-claude";
+import { AgentEnvironment } from "@noburi/core";
 import { AGENTS, agentById } from "./agents.ts";
 import { MissionError, type MissionService } from "./missions.ts";
 import type { RunManager } from "./runs.ts";
@@ -82,6 +83,7 @@ const CreateMissionBody = z.strictObject({
   title: z.string().trim().max(120).optional(),
   /** Optional cap on processed tokens; checked before each task starts. */
   budgetTokens: z.number().int().positive().max(1_000_000_000).optional(),
+  environment: AgentEnvironment.optional(),
 });
 
 const PlanBody = z
@@ -238,6 +240,14 @@ export function createApi(deps: ApiDeps): ApiHandler {
         if (!body.success)
           throw new HttpError(400, body.error.issues[0]?.message ?? "invalid plan");
         json(res, 200, service.setPlan(missionId, body.data.tasks));
+        return true;
+      }
+
+      if (parts.length === 3 && parts[2] === "environment" && method === "PUT") {
+        const body = AgentEnvironment.safeParse(await readJson(req));
+        if (!body.success)
+          throw new HttpError(400, body.error.issues[0]?.message ?? "invalid environment");
+        json(res, 200, service.setEnvironment(missionId, body.data));
         return true;
       }
 

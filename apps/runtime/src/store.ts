@@ -3,7 +3,13 @@ import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { EventType, MissionStatus, TaskStatus } from "@noburi/core";
+import {
+  AgentEnvironment,
+  DEFAULT_ENVIRONMENT,
+  EventType,
+  MissionStatus,
+  TaskStatus,
+} from "@noburi/core";
 import { z } from "zod";
 
 export interface MissionRow {
@@ -17,6 +23,8 @@ export interface MissionRow {
   finishedAt: string | null;
   /** Optional token budget; no new task starts once the mission has used this many. */
   budgetTokens: number | null;
+  /** What this mission's agents inherit from the user's Claude Code setup. */
+  environment: AgentEnvironment;
 }
 
 export interface TaskRow {
@@ -122,6 +130,21 @@ const text = (v: unknown): string =>
   typeof v === "string" ? v : typeof v === "number" || typeof v === "bigint" ? String(v) : "";
 const ArtifactKind = z.enum(["summary", "diff", "log"]);
 /** Rows are re-validated on read: a hand-edited or corrupted database fails loudly, not subtly. */
+/** Missions created before environments existed ran with the full CLI setup; keep saying so. */
+function environmentOf(raw: unknown): AgentEnvironment {
+  if (typeof raw !== "string") {
+    return {
+      userSettings: true,
+      projectSettings: true,
+      hooks: true,
+      mcpServers: true,
+      skills: "default",
+    };
+  }
+  const parsed = AgentEnvironment.safeParse(JSON.parse(raw));
+  return parsed.success ? parsed.data : DEFAULT_ENVIRONMENT;
+}
+
 function payloadOf(raw: string): Record<string, unknown> {
   const value: unknown = JSON.parse(raw);
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -174,6 +197,8 @@ export class Store {
       .map((r) => text(r["name"]));
     if (!columns.includes("budget_tokens"))
       this.#db.exec("alter table missions add column budget_tokens integer");
+    if (!columns.includes("agent_env"))
+      this.#db.exec("alter table missions add column agent_env text");
   }
 
   createMission(input: {
@@ -181,6 +206,7 @@ export class Store {
     title: string;
     objective: string;
     budgetTokens?: number | null | undefined;
+    environment?: AgentEnvironment | undefined;
   }): MissionRow {
     const mission: MissionRow = {
       id: randomUUID(),
@@ -192,10 +218,11 @@ export class Store {
       startedAt: null,
       finishedAt: null,
       budgetTokens: input.budgetTokens ?? null,
+      environment: input.environment ?? DEFAULT_ENVIRONMENT,
     };
     this.#db
       .prepare(
-        "insert into missions (id, workspace_path, title, objective, status, created_at, budget_tokens) values (?, ?, ?, ?, ?, ?, ?)",
+        "insert into missions (id, workspace_path, title, objective, status, created_at, budget_tokens, agent_env) values (?, ?, ?, ?, ?, ?, ?, ?)",
       )
       .run(
         mission.id,
@@ -205,6 +232,7 @@ export class Store {
         mission.status,
         mission.createdAt,
         mission.budgetTokens,
+        JSON.stringify(mission.environment),
       );
     return mission;
   }
@@ -220,6 +248,7 @@ export class Store {
       startedAt: maybe(row["started_at"]),
       finishedAt: maybe(row["finished_at"]),
       budgetTokens: typeof row["budget_tokens"] === "number" ? row["budget_tokens"] : null,
+      environment: environmentOf(row["agent_env"]),
     };
   }
 
@@ -245,6 +274,12 @@ export class Store {
          where id = ?`,
       )
       .run(status, status, now, status, now, id);
+  }
+
+  setEnvironment(id: string, environment: AgentEnvironment): void {
+    this.#db
+      .prepare("update missions set agent_env = ? where id = ?")
+      .run(JSON.stringify(environment), id);
   }
 
   deleteMission(id: string): void {

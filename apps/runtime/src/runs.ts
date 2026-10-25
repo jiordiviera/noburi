@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { AgentEnvironment } from "@noburi/core";
 import type { ClaudeRunOptions, RunEvent } from "@noburi/provider-claude";
 
 export type RunStatus = "running" | "cancelling" | "succeeded" | "failed" | "cancelled";
@@ -19,6 +20,7 @@ export interface CreateRunInput {
   resumeSessionId?: string | undefined;
   fork?: boolean | undefined;
   model?: string | undefined;
+  environment?: AgentEnvironment | undefined;
 }
 
 interface Run {

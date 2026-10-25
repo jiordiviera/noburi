@@ -1,7 +1,8 @@
 import { invoke, isTauri } from "@tauri-apps/api/core";
+import type { AgentEnvironment } from "@noburi/core";
 import type { ProjectSummary, RunEvent, TranscriptEntry } from "@noburi/provider-claude";
 
-export type { ProjectSummary, RunEvent, TranscriptEntry };
+export type { AgentEnvironment, ProjectSummary, RunEvent, TranscriptEntry };
 export type { SessionSummary, TranscriptPart } from "@noburi/provider-claude";
 
 export type RunStatus = "running" | "cancelling" | "succeeded" | "failed" | "cancelled";
@@ -59,6 +60,7 @@ export interface Mission {
   startedAt: string | null;
   finishedAt: string | null;
   budgetTokens: number | null;
+  environment: AgentEnvironment;
 }
 
 export interface MissionTask {
@@ -227,9 +229,15 @@ export const runtime = {
     objective: string;
     title?: string;
     budgetTokens?: number;
+    environment?: AgentEnvironment;
   }) => call<MissionView>("/missions", { method: "POST", body: JSON.stringify(body) }),
   setPlan: (id: string, tasks: PlanTask[]) =>
     call<MissionView>(`/missions/${id}/plan`, { method: "PUT", body: JSON.stringify({ tasks }) }),
+  setEnvironment: (id: string, environment: AgentEnvironment) =>
+    call<MissionView>(`/missions/${id}/environment`, {
+      method: "PUT",
+      body: JSON.stringify(environment),
+    }),
   startMission: (id: string) => call<MissionView>(`/missions/${id}/start`, { method: "POST" }),
   cancelMission: (id: string) => call<MissionView>(`/missions/${id}/cancel`, { method: "POST" }),
   deleteMission: (id: string) => call<{ ok: true }>(`/missions/${id}`, { method: "DELETE" }),

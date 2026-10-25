@@ -15,6 +15,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Office } from "../office/Office";
 import { deriveOffice } from "../office/officeState";
+import { presetOf } from "@noburi/core";
+import { EnvironmentPicker, PRESET_LABEL } from "./EnvironmentPicker";
 import { PlanEditor } from "./PlanEditor";
 import { MISSION_STATUS, TASK_STATUS } from "./status";
 import { useMission } from "./useMission";
@@ -186,6 +188,26 @@ export function MissionDetail({ missionId, agents, onChanged, onDeleted }: Props
             <p className="font-reading text-sm leading-relaxed whitespace-pre-wrap">
               {mission.objective}
             </p>
+          </section>
+
+          <section className="flex flex-col gap-2">
+            <h2 className="text-sm font-semibold">
+              Agent environment
+              {!draft && (
+                <span className="ml-2 font-normal text-muted-foreground">
+                  · {PRESET_LABEL[presetOf(mission.environment)]}
+                </span>
+              )}
+            </h2>
+            {draft && (
+              <EnvironmentPicker
+                value={mission.environment}
+                disabled={busy}
+                onChange={(environment) =>
+                  void act(() => runtime.setEnvironment(mission.id, environment))
+                }
+              />
+            )}
           </section>
 
           {draft ? (

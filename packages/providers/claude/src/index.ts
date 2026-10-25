@@ -3,3 +3,4 @@ export * from "./transcript.ts";
 export * from "./run.ts";
 export * from "./source.ts";
 export * from "./executable.ts";
+export * from "./environment.ts";

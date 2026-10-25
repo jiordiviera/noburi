@@ -5,6 +5,7 @@
 > Status: early alpha. Working today: finding your local Claude Code CLI projects and sessions, reading their
 > history, continuing or forking a session with approvals, and missions of up to three tasks run by Claude
 > Code agents, saved locally in SQLite, with a pixel office that shows what each agent is really doing.
+> Each mission chooses what its agents inherit from your Claude Code setup (settings, hooks, MCP servers, skills).
 > See `docs/DECISIONS.md`.
 
 ## Develop

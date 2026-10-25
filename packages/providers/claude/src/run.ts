@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { query, type PermissionResult, type SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+import type { AgentEnvironment } from "@noburi/core";
+import { sdkEnvironmentOptions } from "./environment.ts";
 import { summarizeToolInput } from "./transcript.ts";
 
 /** Tools that only read the workspace; everything else waits for an explicit human decision. */
@@ -66,6 +68,8 @@ export interface ClaudeRunOptions {
   model?: string | undefined;
   /** Claude Code CLI to run; when unset the SDK uses the binary it ships in node_modules. */
   executable?: string | undefined;
+  /** What the run inherits from the user's Claude Code setup; unset loads everything, like the CLI. */
+  environment?: AgentEnvironment | undefined;
   signal: AbortSignal;
   requestApproval: (request: ApprovalRequest) => Promise<boolean>;
 }
@@ -203,6 +207,7 @@ export async function* runClaude(options: ClaudeRunOptions): AsyncGenerator<RunE
         ...(options.fork ? { forkSession: true } : {}),
         ...(options.model ? { model: options.model } : {}),
         ...(options.executable ? { pathToClaudeCodeExecutable: options.executable } : {}),
+        ...(options.environment ? sdkEnvironmentOptions(options.environment) : {}),
       },
     });
     for await (const message of stream) {

@@ -1,6 +1,11 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { assertTransition, type EventType, type TaskStatus } from "@noburi/core";
+import {
+  assertTransition,
+  type AgentEnvironment,
+  type EventType,
+  type TaskStatus,
+} from "@noburi/core";
 import { agentById, AGENTS } from "./agents.ts";
 import type { RunManager, RunRecord } from "./runs.ts";
 import type { EventRow, MissionRow, PlannedTask, Store, TaskRow } from "./store.ts";
@@ -102,6 +107,7 @@ export class MissionService {
     objective: string;
     title?: string | undefined;
     budgetTokens?: number | undefined;
+    environment?: AgentEnvironment | undefined;
   }): MissionView {
     const title =
       input.title?.trim() || input.objective.trim().split("\n")[0]?.slice(0, 80) || "Mission";
@@ -110,6 +116,7 @@ export class MissionService {
       title,
       objective: input.objective.trim(),
       budgetTokens: input.budgetTokens,
+      environment: input.environment,
     });
     // A starting point the user reviews and edits; nothing runs until they start the mission.
     this.store.replacePlan(mission.id, [
@@ -132,6 +139,14 @@ export class MissionService {
     this.#emit(missionId, "mission.planned", {
       tasks: plan.map((t) => ({ title: t.title, agentId: t.agentId, dependsOn: t.dependsOn })),
     });
+    return this.#viewOrThrow(missionId);
+  }
+
+  setEnvironment(missionId: string, environment: AgentEnvironment): MissionView {
+    const mission = this.#require(missionId);
+    if (mission.status !== "DRAFT")
+      throw new MissionError("only a draft mission can change its environment", "not_draft");
+    this.store.setEnvironment(missionId, environment);
     return this.#viewOrThrow(missionId);
   }
 
@@ -249,6 +264,7 @@ export class MissionService {
       prompt: buildTaskPrompt(mission, task, tasks),
       cwd: mission.workspacePath,
       model: agent?.model,
+      environment: mission.environment,
     });
     const active: Active = {
       taskId: task.id,
