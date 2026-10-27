@@ -39,7 +39,14 @@ const runs = new RunManager((options) =>
 const missions = { service: new MissionService(store, runs), store };
 // Repositories agents work on are cloned next to the database, never into the user's own folders.
 const forge = new GitHubForge(nodeExec, join(dirname(databasePath), "workspaces"));
-const api = createApi({ sessions: sdkSessionSource, runs, missions, forge });
+const api = createApi({
+  sessions: sdkSessionSource,
+  runs,
+  missions,
+  forge,
+  // What Studio shows: the CLI the user installed, even in development where the SDK's is used.
+  connections: { exec: nodeExec, claudePath: claudeExecutable ?? findClaudeExecutable() },
+});
 const server = createRuntimeServer({ token, allowedOrigins, api });
 const boundPort = await listenLoopback(server, port);
 

@@ -12,7 +12,16 @@ import {
 } from "@noburi/provider-claude";
 import { AgentEnvironment } from "@noburi/core";
 import { AGENTS, agentById } from "./agents.ts";
-import { ForgeError, issueInstructions, issueRef, REPO, type GitHubForge } from "./forge.ts";
+import {
+  engineStatus,
+  ForgeError,
+  forgeStatus,
+  issueInstructions,
+  issueRef,
+  REPO,
+  type Exec,
+  type GitHubForge,
+} from "./forge.ts";
 import { MissionError, type MissionService } from "./missions.ts";
 import type { RunManager } from "./runs.ts";
 import type { Store } from "./store.ts";
@@ -25,6 +34,8 @@ export interface ApiDeps {
   missions?: { service: MissionService; store: Store };
   /** GitHub issues as tickets; optional so tests and setups without `gh` can omit it. */
   forge?: GitHubForge;
+  /** Runs CLIs to report which ones are installed; with `claudePath`, for the Studio screen. */
+  connections?: { exec: Exec; claudePath: string | null };
   fs?: DiscoveryFs;
   now?: () => number;
 }
@@ -202,12 +213,31 @@ export function createApi(deps: ApiDeps): ApiHandler {
       return true;
     }
 
+    if (method === "GET" && url.pathname === "/connections" && deps.connections) {
+      const { exec, claudePath } = deps.connections;
+      const [forges, engines] = await Promise.all([
+        forgeStatus(exec),
+        engineStatus(exec, claudePath),
+      ]);
+      json(res, 200, { ...forges, engines });
+      return true;
+    }
+
     if (parts[0] === "forge" && deps.forge) {
       const forge = deps.forge;
       if (method === "GET" && url.pathname === "/forge/issues") {
         const repo = url.searchParams.get("repo") ?? "";
         if (!REPO.test(repo)) throw new HttpError(400, "repo must be owner/name");
         json(res, 200, { repo, issues: await forge.listIssues(repo) });
+        return true;
+      }
+
+      if (method === "GET" && url.pathname === "/forge/pull") {
+        const repo = url.searchParams.get("repo") ?? "";
+        const number = Number(url.searchParams.get("number"));
+        if (!REPO.test(repo)) throw new HttpError(400, "repo must be owner/name");
+        if (!Number.isInteger(number) || number <= 0) throw new HttpError(400, "invalid number");
+        json(res, 200, await forge.pullRequest(repo, number));
         return true;
       }
 

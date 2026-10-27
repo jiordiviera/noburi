@@ -119,6 +119,37 @@ export interface Issue {
   labels: { name: string; color: string }[];
 }
 
+/** A pull request as the desk shows it, read through the player's gh. */
+export interface PullRequest {
+  number: number;
+  title: string;
+  body: string;
+  url: string;
+  state: string;
+  branch: string;
+  additions: number;
+  deletions: number;
+  changedFiles: number;
+  checks: { name: string; state: "pass" | "fail" | "pending" }[];
+  diff: string;
+}
+
+export interface ToolStatus {
+  installed: boolean;
+  account: string | null;
+}
+
+export interface Connections {
+  github: ToolStatus;
+  gitlab: ToolStatus;
+  engines: {
+    id: "claude" | "codex" | "gemini";
+    installed: boolean;
+    path: string | null;
+    supported: boolean;
+  }[];
+}
+
 export interface UsageLine {
   inputTokens: number;
   outputTokens: number;
@@ -254,6 +285,9 @@ export const runtime = {
   deleteMission: (id: string) => call<{ ok: true }>(`/missions/${id}`, { method: "DELETE" }),
   issues: (repo: string) =>
     call<{ repo: string; issues: Issue[] }>(`/forge/issues?repo=${encodeURIComponent(repo)}`),
+  pullRequest: (repo: string, number: number) =>
+    call<PullRequest>(`/forge/pull?repo=${encodeURIComponent(repo)}&number=${number}`),
+  connections: () => call<Connections>("/connections"),
   /** The developer takes the issue: a mission in a clone of the repository, started at once. */
   workOnIssue: (repo: string, number: number) =>
     call<MissionView>("/forge/work", { method: "POST", body: JSON.stringify({ repo, number }) }),

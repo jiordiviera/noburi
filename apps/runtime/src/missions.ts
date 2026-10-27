@@ -308,7 +308,12 @@ export class MissionService {
         this.#emit(
           missionId,
           "tool.started",
-          { toolUseId: event.toolUseId, name: event.name, summary: event.summary },
+          {
+            toolUseId: event.toolUseId,
+            name: event.name,
+            summary: event.summary,
+            detail: event.detail,
+          },
           id,
         );
         break;
