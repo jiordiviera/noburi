@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Download Noburi</title>
+    <meta
+      name="description"
+      content="Download Noburi for Linux, or build it from source. Free and open source, Apache-2.0."
+    />
+    <meta name="theme-color" content="#101820" />
+    <link rel="icon" href="../../assets/brand/source/noburi-app-icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/site.css" />
+  </head>
+  <body>
+    <a class="ribbon" href="https://buymeacoffee.com/jiordiviera" aria-label="Buy me a coffee">
+      <img src="../../assets/vendor/svgl/bmc.svg" alt="" />
+      Buy me a coffee
+    </a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">
+          <img src="../../assets/brand/source/noburi-app-icon.svg" alt="" />Noburi
+        </a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="/#how">How it plays</a>
+          <a href="/#features">Features</a>
+          <a href="https://github.com/jiordiviera/noburi">GitHub</a>
+        </nav>
+        <a class="btn btn-honey" href="/download" aria-current="page">Download</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="wrap" style="padding-top: 64px; display: flex; flex-direction: column; gap: 14px">
+        <span class="badge eyebrow" style="align-self: flex-start">Version 0.1.0 · Alpha</span>
+        <h1 style="font-size: clamp(40px, 5vw, 60px); line-height: 1.05">Download Noburi</h1>
+        <p class="lead">
+          Free and open source. One app, its runtime bundled inside. Your agents run on the Claude
+          Code you already have.
+        </p>
+      </section>
+
+      <section class="wrap platforms" aria-label="Choose your system">
+        <div class="win-honey platform">
+          <header>
+            <span>Linux</span>
+            <em class="ready">First release soon</em>
+          </header>
+          <p>
+            An AppImage that runs on most distributions, and a .deb for Debian and Ubuntu. Both are
+            being prepared for the first public release.
+          </p>
+          <a class="btn btn-honey" href="https://github.com/jiordiviera/noburi/releases">GitHub releases</a>
+          <a class="btn btn-slate" href="#source">Build it today</a>
+        </div>
+        <div class="win platform soon">
+          <header>
+            <span>macOS</span>
+            <em>Later</em>
+          </header>
+          <p>Not packaged yet. You can build it from source today; a signed build comes after the alpha.</p>
+          <a class="btn btn-slate" href="#source">Build from source</a>
+        </div>
+        <div class="win platform soon">
+          <header>
+            <span>Windows</span>
+            <em>Later</em>
+          </header>
+          <p>Not packaged yet. Watch the repository to hear when it ships.</p>
+          <a class="btn btn-slate" href="https://github.com/jiordiviera/noburi">Watch on GitHub</a>
+        </div>
+      </section>
+
+      <section class="wrap split" style="padding-bottom: 64px">
+        <div class="win box narrow">
+          <span class="eyebrow" style="color: var(--honey)">Before you start</span>
+          <ul class="list">
+            <li>
+              <span class="dot" style="background: var(--honey)"></span>
+              <span><strong>Claude Code</strong>, installed and signed in. Your agents run on it.</span>
+            </li>
+            <li>
+              <span class="dot" style="background: var(--info)"></span>
+              <span><strong>GitHub CLI</strong>, signed in with <code>gh auth login</code>, for the issue board.</span>
+            </li>
+            <li>
+              <span class="dot" style="background: var(--mint)"></span>
+              <span><strong>Git.</strong> Node is not needed to run the packaged app: it ships inside.</span>
+            </li>
+          </ul>
+        </div>
+        <div class="win box wide">
+          <span class="eyebrow" style="color: var(--honey)">Install a Linux package</span>
+          <h3 style="font-size: 19px">AppImage</h3>
+          <pre class="code">chmod +x Noburi_0.1.0_amd64.AppImage
+./Noburi_0.1.0_amd64.AppImage</pre>
+          <h3 style="font-size: 19px">.deb</h3>
+          <pre class="code">sudo apt install ./Noburi_0.1.0_amd64.deb</pre>
+          <p style="margin: 0; font-size: 14px; color: var(--muted)">
+            Alpha builds are not signed yet. Check each file against the SHA-256 listed on its
+            release page.
+          </p>
+        </div>
+      </section>
+
+      <section id="source" class="band">
+        <div class="wrap block split">
+          <div class="wide" style="display: flex; flex-direction: column; gap: 14px">
+            <h2 style="font-size: 32px">Build from source</h2>
+            <p style="margin: 0; color: var(--muted)">
+              Any system with Node 22, pnpm and the
+              <a href="https://tauri.app/start/prerequisites/">Tauri prerequisites</a>.
+            </p>
+            <pre class="code">git clone https://github.com/jiordiviera/noburi
+cd noburi
+pnpm install
+pnpm desktop</pre>
+          </div>
+          <div class="narrow" style="display: flex; flex-direction: column; gap: 14px">
+            <h2 style="font-size: 32px">In 0.1.0</h2>
+            <ul class="list">
+              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>The office, with your GitHub issues on the board</li>
+              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>A developer agent that opens real pull requests</li>
+              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>Approvals that show the full command</li>
+              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>A quest log checked off from real tool calls</li>
+              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>Everything saved locally, in SQLite</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span class="pixel" style="font-size: 16px; font-weight: 700; color: var(--cream)">Noburi</span>
+        <span>Apache-2.0 · not affiliated with Anthropic, OpenAI or Google</span>
+        <nav aria-label="Footer">
+          <a href="/">Home</a>
+          <a href="https://github.com/jiordiviera/noburi">Source</a>
+          <a href="https://github.com/jiordiviera/noburi/issues">Report a bug</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
