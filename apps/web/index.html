@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Noburi · your Claude Code agents, at work</title>
+    <meta
+      name="description"
+      content="Run your Claude Code agents like a studio game. Pin GitHub issues on a pixel office board, hand them to an agent, approve every command, merge what it delivers. Open source, local first."
+    />
+    <meta property="og:title" content="Noburi · your agents, at work" />
+    <meta
+      property="og:description"
+      content="A pixel office where real Claude Code agents take your GitHub issues and open real pull requests."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#101820" />
+    <link rel="icon" href="../../assets/brand/source/noburi-app-icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/site.css" />
+  </head>
+  <body>
+    <a class="ribbon" href="https://buymeacoffee.com/jiordiviera" aria-label="Buy me a coffee">
+      <img src="../../assets/vendor/svgl/bmc.svg" alt="" />
+      Buy me a coffee
+    </a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">
+          <img src="../../assets/brand/source/noburi-app-icon.svg" alt="" />Noburi
+        </a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="#how">How it plays</a>
+          <a href="#features">Features</a>
+          <a href="https://github.com/jiordiviera/noburi">GitHub</a>
+        </nav>
+        <a class="btn btn-honey" href="/download">Download</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="wrap hero">
+        <span class="badge eyebrow">Open source · Apache-2.0 · Alpha</span>
+        <h1>Run your Claude Code agents like a studio game</h1>
+        <p class="lead">
+          Pin your GitHub issues on the board, hand one to an agent, approve what it runs, merge
+          what it delivers. The work and the pull requests are real. Only the coffee breaks are
+          staged.
+        </p>
+        <div class="actions">
+          <a class="btn btn-honey" href="/download">Download for Linux</a>
+          <a class="btn btn-slate" href="https://github.com/jiordiviera/noburi">
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"
+              />
+            </svg>
+            Star on GitHub
+          </a>
+        </div>
+
+        <div class="scene">
+          <img
+            class="bg px"
+            src="../../assets/worlds/cozy-office/background.svg"
+            alt="The Noburi office at night: an issue board, the developer at a desk, your desk with the review tray"
+          />
+          <div class="board" aria-hidden="true">
+            <span class="card" style="background: #7dd3b0">#4</span>
+            <span class="card" style="background: #8ec5ff">#3</span>
+            <span class="card" style="background: #8ec5ff">#2</span>
+            <span class="card" style="background: #f2867a; opacity: 0.3">#1</span>
+          </div>
+          <img
+            class="sprite px"
+            src="../../assets/avatars/official/developer/waiting.svg"
+            alt=""
+            style="left: 19.375%; top: 57.5%"
+          />
+          <img
+            class="desk px"
+            src="../../assets/worlds/cozy-office/objects/desk.svg"
+            alt=""
+            style="left: 16.25%; top: 60%"
+          />
+          <img
+            class="desk px"
+            src="../../assets/worlds/cozy-office/objects/desk.svg"
+            alt=""
+            style="left: 72.5%; top: 60%"
+          />
+          <div class="dialog win-honey">
+            <img class="px" src="../../assets/avatars/official/developer/waiting.svg" alt="" />
+            <div class="who">
+              <span>THE DEVELOPER ASKS</span>
+              <code>$ git push -u origin noburi/issue-1</code>
+            </div>
+            <span class="chip">Approve once</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" class="wrap block">
+        <div class="heading">
+          <span class="eyebrow" style="color: var(--honey)">How it plays</span>
+          <h2>One ticket, four moves</h2>
+        </div>
+        <ol class="grid">
+          <li class="win step">
+            <span class="num">1</span>
+            <h3>Pin</h3>
+            <p>Your open GitHub issues become cards on the office board, coloured by label.</p>
+          </li>
+          <li class="win step">
+            <span class="num">2</span>
+            <h3>Give</h3>
+            <p>
+              Drop a card on an agent. It walks over, takes it, opens a branch and gets to work.
+            </p>
+          </li>
+          <li class="win step">
+            <span class="num">3</span>
+            <h3>Approve</h3>
+            <p>
+              Every edit, command and push raises a “!”. You read the full command, then decide.
+            </p>
+          </li>
+          <li class="win step">
+            <span class="num">4</span>
+            <h3>Merge</h3>
+            <p>The pull request lands on your desk with its checks. Merging is always your move.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="features" class="wrap block">
+        <article class="feature">
+          <div class="text">
+            <span class="eyebrow" style="color: var(--info)">The board is your GitHub</span>
+            <h3>Issues in, pull requests out</h3>
+            <p>
+              Noburi reads your repository through your own <code>gh</code> login. Each agent works
+              on its own branch in a private clone, and what it ships comes back as a real pull
+              request that closes the issue.
+            </p>
+          </div>
+          <figure>
+            <div class="screen">
+              <div class="panel">
+                <div class="lamp-row">
+                  <span class="lamp" style="background: #f2867a"></span>#1 remaining() counts
+                  finished items
+                </div>
+                <div class="lamp-row">
+                  <span class="lamp" style="background: #8ec5ff"></span>#2 Add removeItem(list,
+                  index)
+                </div>
+                <div class="lamp-row">
+                  <span class="lamp" style="background: #8ec5ff"></span>#3 Reject empty titles
+                </div>
+                <div class="lamp-row">
+                  <span class="lamp" style="background: #7dd3b0"></span>#4 Document the API
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              Issues from a test repository, as the board lists them. Demo video coming.
+            </figcaption>
+          </figure>
+        </article>
+
+        <article class="feature flip">
+          <figure>
+            <div class="screen">
+              <div class="panel">
+                <div class="win-honey" style="padding: 16px; display: flex; gap: 14px">
+                  <img
+                    class="px"
+                    src="../../assets/avatars/official/developer/waiting.svg"
+                    alt=""
+                    style="width: 64px; height: 64px"
+                  />
+                  <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+                    <span class="pixel" style="font-size: 17px"
+                      >Tests pass, 3 of 3. Pushing my branch.</span
+                    >
+                    <pre class="code">$ git push -u origin noburi/issue-1</pre>
+                    <span style="display: flex; gap: 10px">
+                      <span class="btn btn-honey" style="min-height: 38px; font-size: 15px"
+                        >Approve once</span
+                      >
+                      <span class="btn btn-slate" style="min-height: 38px; font-size: 15px"
+                        >Refuse</span
+                      >
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption>The approval dialog, with the command shown in full.</figcaption>
+          </figure>
+          <div class="text">
+            <span class="eyebrow" style="color: var(--honey)">Nothing behind your back</span>
+            <h3>You see every command before it runs</h3>
+            <p>
+              Reading files is free. Anything else waits for you, shown whole, never summarised.
+              Refuse once and the agent stops and tells you what it was about to do.
+            </p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="text">
+            <span class="eyebrow" style="color: var(--mint)">Your engines, your accounts</span>
+            <h3>Agents on the CLI you already use</h3>
+            <p>
+              Agents run on the Claude Code you installed, with your own subscription. Codex and
+              Gemini CLI are planned. Noburi stores no token.
+            </p>
+            <div class="engines">
+              <span
+                ><img src="../../assets/vendor/svgl/claude-ai-icon.svg" alt="Claude Code"
+              /></span>
+              <span class="later"
+                ><img src="../../assets/vendor/svgl/openai_dark.svg" alt="Codex, planned"
+              /></span>
+              <span class="later"
+                ><img src="../../assets/vendor/svgl/gemini.svg" alt="Gemini CLI, planned"
+              /></span>
+            </div>
+          </div>
+          <figure>
+            <div class="screen">
+              <div class="panel">
+                <div class="lamp-row">
+                  <span class="lamp on"></span>Claude Code<small>ready</small>
+                </div>
+                <div class="lamp-row"><span class="lamp"></span>Codex<small>planned</small></div>
+                <div class="lamp-row">
+                  <span class="lamp"></span>Gemini CLI<small>planned</small>
+                </div>
+                <div class="lamp-row"><span class="lamp on"></span>GitHub · gh<small>connected</small></div>
+              </div>
+            </div>
+            <figcaption>Studio lists the CLIs found on your machine.</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <section class="band">
+        <div class="wrap block">
+          <div class="heading"><h2>House rules</h2></div>
+          <ul class="grid">
+            <li class="rule">
+              <span class="dot" style="background: var(--mint)"></span>
+              <span><strong>No fake work</strong><p>An agent shown typing is really running a tool.</p></span>
+            </li>
+            <li class="rule">
+              <span class="dot" style="background: var(--honey)"></span>
+              <span><strong>Only you merge</strong><p>Agents open pull requests. They never merge.</p></span>
+            </li>
+            <li class="rule">
+              <span class="dot" style="background: var(--info)"></span>
+              <span
+                ><strong>Local first</strong
+                ><p>Missions and history stay in SQLite on your machine.</p></span
+              >
+            </li>
+            <li class="rule">
+              <span class="dot" style="background: var(--error)"></span>
+              <span
+                ><strong>Your name on commits</strong
+                ><p>No AI trailers in commits or pull requests.</p></span
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="wrap block pair">
+        <div class="win card-win">
+          <h2>Built in the open</h2>
+          <p>Apache-2.0. Read the code, file an issue, or send a pull request.</p>
+          <a class="btn btn-slate" href="https://github.com/jiordiviera/noburi">jiordiviera/noburi</a>
+        </div>
+        <div class="win card-win">
+          <h2>Keep the lights on</h2>
+          <p>Noburi is free. If it saves you an evening, a coffee helps the office stay open at night.</p>
+          <a class="btn btn-slate" href="https://buymeacoffee.com/jiordiviera">
+            <img src="../../assets/vendor/svgl/bmc.svg" alt="" style="width: 16px; height: 23px" />
+            Buy me a coffee
+          </a>
+        </div>
+      </section>
+
+      <section class="wrap final">
+        <img class="bob" src="../../assets/brand/source/noburi-app-icon.svg" alt="" width="96" height="96" />
+        <h2>Open your studio tonight</h2>
+        <a class="btn btn-honey" href="/download">Download for Linux</a>
+        <span style="font-size: 15px; color: var(--muted)"
+          >macOS and Windows later. Needs Claude Code installed.</span
+        >
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span class="pixel" style="font-size: 16px; font-weight: 700; color: var(--cream)">Noburi</span>
+        <span>Apache-2.0 · not affiliated with Anthropic, OpenAI or Google</span>
+        <nav aria-label="Footer">
+          <a href="/download">Download</a>
+          <a href="https://github.com/jiordiviera/noburi">Source</a>
+          <a href="https://github.com/jiordiviera/noburi/issues">Report a bug</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
