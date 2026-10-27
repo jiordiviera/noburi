@@ -33,7 +33,10 @@
     </header>
 
     <main>
-      <section class="wrap" style="padding-top: 64px; display: flex; flex-direction: column; gap: 14px">
+      <section
+        class="wrap"
+        style="padding-top: 64px; display: flex; flex-direction: column; gap: 14px"
+      >
         <span class="badge eyebrow" style="align-self: flex-start">Version 0.1.0 · Alpha</span>
         <h1 style="font-size: clamp(40px, 5vw, 60px); line-height: 1.05">Download Noburi</h1>
         <p class="lead">
@@ -52,7 +55,9 @@
             An AppImage that runs on most distributions, and a .deb for Debian and Ubuntu. Both are
             being prepared for the first public release.
           </p>
-          <a class="btn btn-honey" href="https://github.com/jiordiviera/noburi/releases">GitHub releases</a>
+          <a class="btn btn-honey" href="https://github.com/jiordiviera/noburi/releases"
+            >GitHub releases</a
+          >
           <a class="btn btn-slate" href="#source">Build it today</a>
         </div>
         <div class="win platform soon">
@@ -60,7 +65,10 @@
             <span>macOS</span>
             <em>Later</em>
           </header>
-          <p>Not packaged yet. You can build it from source today; a signed build comes after the alpha.</p>
+          <p>
+            Not packaged yet. You can build it from source today; a signed build comes after the
+            alpha.
+          </p>
           <a class="btn btn-slate" href="#source">Build from source</a>
         </div>
         <div class="win platform soon">
@@ -79,22 +87,31 @@
           <ul class="list">
             <li>
               <span class="dot" style="background: var(--honey)"></span>
-              <span><strong>Claude Code</strong>, installed and signed in. Your agents run on it.</span>
+              <span
+                ><strong>Claude Code</strong>, installed and signed in. Your agents run on it.</span
+              >
             </li>
             <li>
               <span class="dot" style="background: var(--info)"></span>
-              <span><strong>GitHub CLI</strong>, signed in with <code>gh auth login</code>, for the issue board.</span>
+              <span
+                ><strong>GitHub CLI</strong>, signed in with <code>gh auth login</code>, for the
+                issue board.</span
+              >
             </li>
             <li>
               <span class="dot" style="background: var(--mint)"></span>
-              <span><strong>Git.</strong> Node is not needed to run the packaged app: it ships inside.</span>
+              <span
+                ><strong>Git.</strong> Node is not needed to run the packaged app: it ships
+                inside.</span
+              >
             </li>
           </ul>
         </div>
         <div class="win box wide">
           <span class="eyebrow" style="color: var(--honey)">Install a Linux package</span>
           <h3 style="font-size: 19px">AppImage</h3>
-          <pre class="code">chmod +x Noburi_0.1.0_amd64.AppImage
+          <pre class="code">
+chmod +x Noburi_0.1.0_amd64.AppImage
 ./Noburi_0.1.0_amd64.AppImage</pre>
           <h3 style="font-size: 19px">.deb</h3>
           <pre class="code">sudo apt install ./Noburi_0.1.0_amd64.deb</pre>
@@ -113,7 +130,8 @@
               Any system with Node 22, pnpm and the
               <a href="https://tauri.app/start/prerequisites/">Tauri prerequisites</a>.
             </p>
-            <pre class="code">git clone https://github.com/jiordiviera/noburi
+            <pre class="code">
+git clone https://github.com/jiordiviera/noburi
 cd noburi
 pnpm install
 pnpm desktop</pre>
@@ -121,11 +139,41 @@ pnpm desktop</pre>
           <div class="narrow" style="display: flex; flex-direction: column; gap: 14px">
             <h2 style="font-size: 32px">In 0.1.0</h2>
             <ul class="list">
-              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>The office, with your GitHub issues on the board</li>
-              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>A developer agent that opens real pull requests</li>
-              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>Approvals that show the full command</li>
-              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>A quest log checked off from real tool calls</li>
-              <li><span class="dot" style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"></span>Everything saved locally, in SQLite</li>
+              <li>
+                <span
+                  class="dot"
+                  style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"
+                ></span
+                >The office, with your GitHub issues on the board
+              </li>
+              <li>
+                <span
+                  class="dot"
+                  style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"
+                ></span
+                >A developer agent that opens real pull requests
+              </li>
+              <li>
+                <span
+                  class="dot"
+                  style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"
+                ></span
+                >Approvals that show the full command
+              </li>
+              <li>
+                <span
+                  class="dot"
+                  style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"
+                ></span
+                >A quest log checked off from real tool calls
+              </li>
+              <li>
+                <span
+                  class="dot"
+                  style="background: var(--honey); width: 10px; height: 10px; margin-top: 7px"
+                ></span
+                >Everything saved locally, in SQLite
+              </li>
             </ul>
           </div>
         </div>
@@ -134,7 +182,9 @@ pnpm desktop</pre>
 
     <footer class="site-footer">
       <div class="wrap">
-        <span class="pixel" style="font-size: 16px; font-weight: 700; color: var(--cream)">Noburi</span>
+        <span class="pixel" style="font-size: 16px; font-weight: 700; color: var(--cream)"
+          >Noburi</span
+        >
         <span>Apache-2.0 · not affiliated with Anthropic, OpenAI or Google</span>
         <nav aria-label="Footer">
           <a href="/">Home</a>
