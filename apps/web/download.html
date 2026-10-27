@@ -49,16 +49,32 @@
         <div class="win-honey platform">
           <header>
             <span>Linux</span>
-            <em class="ready">First release soon</em>
+            <em class="ready">Available</em>
           </header>
           <p>
-            An AppImage that runs on most distributions, and a .deb for Debian and Ubuntu. Both are
-            being prepared for the first public release.
+            An AppImage that runs on most x64 distributions, and a .deb for Debian and Ubuntu that
+            adds Noburi to your app menu.
           </p>
-          <a class="btn btn-honey" href="https://github.com/jiordiviera/noburi/releases"
-            >GitHub releases</a
+          <a
+            class="btn btn-honey"
+            style="justify-content: space-between"
+            href="https://github.com/jiordiviera/noburi/releases/download/v0.1.0/Noburi_0.1.0_amd64.AppImage"
+            >AppImage <span style="font: 500 14px var(--mono)">x64 · 126 MB</span></a
           >
-          <a class="btn btn-slate" href="#source">Build it today</a>
+          <a
+            class="btn btn-slate"
+            style="justify-content: space-between"
+            href="https://github.com/jiordiviera/noburi/releases/download/v0.1.0/Noburi_0.1.0_amd64.deb"
+            >.deb
+            <span style="font: 500 14px var(--mono); color: var(--muted)"
+              >Debian, Ubuntu · 50 MB</span
+            ></a
+          >
+          <a
+            href="https://github.com/jiordiviera/noburi/releases/tag/v0.1.0"
+            style="font-size: 14px"
+            >Release notes and checksums</a
+          >
         </div>
         <div class="win platform soon">
           <header>
@@ -116,9 +132,13 @@ chmod +x Noburi_0.1.0_amd64.AppImage
           <h3 style="font-size: 19px">.deb</h3>
           <pre class="code">sudo apt install ./Noburi_0.1.0_amd64.deb</pre>
           <p style="margin: 0; font-size: 14px; color: var(--muted)">
-            Alpha builds are not signed yet. Check each file against the SHA-256 listed on its
-            release page.
+            Alpha builds are not signed yet. Download
+            <a href="https://github.com/jiordiviera/noburi/releases/download/v0.1.0/SHA256SUMS"
+              >SHA256SUMS</a
+            >
+            next to the file and check it:
           </p>
+          <pre class="code">sha256sum -c SHA256SUMS --ignore-missing</pre>
         </div>
       </section>
 
