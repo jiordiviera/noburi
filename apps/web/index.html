@@ -17,6 +17,7 @@
     <meta name="theme-color" content="#101820" />
     <link rel="icon" href="../../assets/brand/source/noburi-app-icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/site.css" />
+    <script type="module" src="./src/hero.ts"></script>
   </head>
   <body>
     <a class="ribbon" href="https://buymeacoffee.com/jiordiviera" aria-label="Buy me a coffee">
@@ -60,24 +61,40 @@
           </a>
         </div>
 
-        <div class="scene">
+        <div class="scene" id="hero-scene">
           <img
             class="bg px"
             src="../../assets/worlds/cozy-office/background.svg"
             alt="The Noburi office at night: an issue board, the developer at a desk, your desk with the review tray"
           />
+          <span class="star" style="left: 9.375%; top: 11.25%"></span>
+          <span class="star" style="left: 13.75%; top: 15%; animation-delay: 0.7s"></span>
+          <span class="star" style="left: 11.25%; top: 21.25%; animation-delay: 1.4s"></span>
+          <span class="star" style="left: 18.125%; top: 12.5%; animation-delay: 2.1s"></span>
+          <span class="star" style="left: 22.5%; top: 23.75%; animation-delay: 0.35s"></span>
+          <span class="star" style="left: 16.25%; top: 27.5%; animation-delay: 1.05s"></span>
           <div class="board" aria-hidden="true">
-            <span class="card" style="background: #7dd3b0">#4</span>
-            <span class="card" style="background: #8ec5ff">#3</span>
-            <span class="card" style="background: #8ec5ff">#2</span>
-            <span class="card" style="background: #f2867a; opacity: 0.3">#1</span>
+            <span class="card" data-card="1" style="background: #f2867a">#1</span>
+            <span class="card" data-card="2" style="background: #8ec5ff">#2</span>
+            <span class="card" data-card="3" style="background: #8ec5ff">#3</span>
+            <span class="card" data-card="4" style="background: #7dd3b0">#4</span>
           </div>
           <img
+            id="hero-dev"
             class="sprite px"
-            src="../../assets/avatars/official/developer/waiting.svg"
+            src="../../assets/avatars/official/developer/idle.svg"
             alt=""
             style="left: 19.375%; top: 57.5%"
           />
+          <span id="hero-carry" class="carry" hidden></span>
+          <img
+            id="hero-bubble"
+            class="bubble px"
+            src="../../assets/worlds/cozy-office/objects/bubble-approval.svg"
+            alt=""
+            hidden
+          />
+          <span id="hero-tool" class="tool" hidden></span>
           <img
             class="desk px"
             src="../../assets/worlds/cozy-office/objects/desk.svg"
@@ -90,13 +107,14 @@
             alt=""
             style="left: 72.5%; top: 60%"
           />
-          <div class="dialog win-honey">
+          <span class="tray" aria-hidden="true"><span id="hero-count" hidden>0</span></span>
+          <div id="hero-dialog" class="dialog win-honey" aria-live="polite">
             <img class="px" src="../../assets/avatars/official/developer/waiting.svg" alt="" />
             <div class="who">
               <span>THE DEVELOPER ASKS</span>
-              <code>$ git push -u origin noburi/issue-1</code>
+              <code id="hero-cmd">$ git push -u origin noburi/issue-1</code>
             </div>
-            <span class="chip">Approve once</span>
+            <span id="hero-btn" class="chip">Approve once</span>
           </div>
         </div>
       </section>
@@ -107,26 +125,26 @@
           <h2>One ticket, four moves</h2>
         </div>
         <ol class="grid">
-          <li class="win step">
+          <li class="reveal win step">
             <span class="num">1</span>
             <h3>Pin</h3>
             <p>Your open GitHub issues become cards on the office board, coloured by label.</p>
           </li>
-          <li class="win step">
+          <li class="reveal win step">
             <span class="num">2</span>
             <h3>Give</h3>
             <p>
               Drop a card on an agent. It walks over, takes it, opens a branch and gets to work.
             </p>
           </li>
-          <li class="win step">
+          <li class="reveal win step">
             <span class="num">3</span>
             <h3>Approve</h3>
             <p>
               Every edit, command and push raises a “!”. You read the full command, then decide.
             </p>
           </li>
-          <li class="win step">
+          <li class="reveal win step">
             <span class="num">4</span>
             <h3>Merge</h3>
             <p>The pull request lands on your desk with its checks. Merging is always your move.</p>
@@ -135,7 +153,7 @@
       </section>
 
       <section id="features" class="wrap block">
-        <article class="feature">
+        <article class="reveal feature">
           <div class="text">
             <span class="eyebrow" style="color: var(--info)">The board is your GitHub</span>
             <h3>Issues in, pull requests out</h3>
@@ -170,7 +188,7 @@
           </figure>
         </article>
 
-        <article class="feature flip">
+        <article class="reveal feature flip">
           <figure>
             <div class="screen">
               <div class="panel">
@@ -210,7 +228,7 @@
           </div>
         </article>
 
-        <article class="feature">
+        <article class="reveal feature">
           <div class="text">
             <span class="eyebrow" style="color: var(--mint)">Your engines, your accounts</span>
             <h3>Agents on the CLI you already use</h3>
@@ -254,28 +272,28 @@
         <div class="wrap block">
           <div class="heading"><h2>House rules</h2></div>
           <ul class="grid">
-            <li class="rule">
+            <li class="reveal rule">
               <span class="dot" style="background: var(--mint)"></span>
               <span
                 ><strong>No fake work</strong>
                 <p>An agent shown typing is really running a tool.</p></span
               >
             </li>
-            <li class="rule">
+            <li class="reveal rule">
               <span class="dot" style="background: var(--honey)"></span>
               <span
                 ><strong>Only you merge</strong>
                 <p>Agents open pull requests. They never merge.</p></span
               >
             </li>
-            <li class="rule">
+            <li class="reveal rule">
               <span class="dot" style="background: var(--info)"></span>
               <span
                 ><strong>Local first</strong>
                 <p>Missions and history stay in SQLite on your machine.</p></span
               >
             </li>
-            <li class="rule">
+            <li class="reveal rule">
               <span class="dot" style="background: var(--error)"></span>
               <span
                 ><strong>Your name on commits</strong>
@@ -287,14 +305,14 @@
       </section>
 
       <section class="wrap block pair">
-        <div class="win card-win">
+        <div class="reveal win card-win">
           <h2>Built in the open</h2>
           <p>Apache-2.0. Read the code, file an issue, or send a pull request.</p>
           <a class="btn btn-slate" href="https://github.com/jiordiviera/noburi"
             >jiordiviera/noburi</a
           >
         </div>
-        <div class="win card-win">
+        <div class="reveal win card-win">
           <h2>Keep the lights on</h2>
           <p>
             Noburi is free. If it saves you an evening, a coffee helps the office stay open at

@@ -25,13 +25,20 @@
   box-sizing: border-box;
 }
 
+/* Set on html too: otherwise body's overflow moves to the viewport and stops clipping the ribbon. */
+html {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   background: var(--canvas);
   color: var(--cream);
   font-family: var(--sans);
   line-height: 1.5;
-  overflow-x: hidden;
+  /* The corner ribbon is rotated past the edge: clip it without creating a scroll container. */
+  position: relative;
+  overflow-x: clip;
 }
 
 a {
@@ -772,5 +779,202 @@ pre.code {
   .dialog {
     position: static;
     margin: 12px;
+  }
+}
+
+/* Hero animation: the developer walks, works, asks and delivers (src/hero.ts). */
+.scene .star {
+  position: absolute;
+  width: 0.3125%;
+  aspect-ratio: 1;
+  background: var(--cream);
+  animation: twinkle 2.8s steps(2, end) infinite;
+}
+
+@keyframes twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.scene .sprite {
+  transition-property: left, top;
+  transition-timing-function: linear;
+  z-index: 1;
+}
+
+.scene .sprite.walking {
+  animation: walk 0.3s steps(2, end) infinite;
+}
+
+.scene .sprite.left {
+  scale: -1 1;
+}
+
+@keyframes walk {
+  50% {
+    translate: 0 -12%;
+  }
+}
+
+.scene .carry {
+  position: absolute;
+  z-index: 2;
+  width: 1.6%;
+  aspect-ratio: 1;
+  box-shadow: 0 0 0 2px var(--night);
+  transition-property: left, top;
+  transition-timing-function: linear;
+}
+
+.scene .bubble {
+  position: absolute;
+  z-index: 3;
+  width: 3.4%;
+  animation: bob 0.8s steps(2, end) infinite;
+}
+
+.scene .tool {
+  position: absolute;
+  z-index: 3;
+  translate: -50% 0;
+  padding: 2px 8px;
+  background: var(--night);
+  box-shadow: 0 0 0 2px var(--mint);
+  color: var(--mint);
+  font: 500 clamp(9px, 1.1vw, 13px) var(--mono);
+  white-space: nowrap;
+}
+
+.scene .card {
+  transition: opacity 0.2s steps(2, end);
+}
+
+.scene .card.taken {
+  opacity: 0.25;
+}
+
+.scene .tray {
+  position: absolute;
+  left: 73.75%;
+  top: 61.25%;
+  width: 4.7%;
+  height: 3.75%;
+  background: var(--muted);
+  box-shadow: 0 0 0 3px var(--line);
+}
+
+.scene .tray span {
+  position: absolute;
+  right: -40%;
+  top: -150%;
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--error);
+  color: var(--night);
+  font: 700 13px var(--pixel);
+  box-shadow: 0 0 0 3px var(--night);
+}
+
+.scene .tray span.pop {
+  animation: pop 0.4s steps(3, end);
+}
+
+@keyframes pop {
+  50% {
+    scale: 1.6;
+  }
+}
+
+.animated .scene .dialog {
+  opacity: 0;
+  translate: 0 16px;
+  transition:
+    opacity 0.25s steps(3, end),
+    translate 0.25s steps(3, end);
+}
+
+.animated .scene .dialog.open {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.scene .chip {
+  box-shadow: 0 4px 0 var(--honey-dark);
+}
+
+.scene .chip.pressed {
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--honey-dark);
+  background: #ffcb86;
+}
+
+/* Sections arrive in a few hard steps. */
+.animated .reveal {
+  opacity: 0;
+  translate: 0 28px;
+  transition:
+    opacity 0.45s steps(4, end),
+    translate 0.45s steps(4, end);
+}
+
+.animated .reveal.shown {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.animated .grid .reveal:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.animated .grid .reveal:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.animated .grid .reveal:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+/* Inside the feature screens: rows light up one by one once shown. */
+.animated .feature .lamp-row {
+  opacity: 0;
+  transition: opacity 0.2s steps(2, end);
+}
+
+.animated .feature.shown .lamp-row {
+  opacity: 1;
+}
+
+.animated .feature.shown .lamp-row:nth-child(2) {
+  transition-delay: 0.35s;
+}
+
+.animated .feature.shown .lamp-row:nth-child(3) {
+  transition-delay: 0.7s;
+}
+
+.animated .feature.shown .lamp-row:nth-child(4) {
+  transition-delay: 1.05s;
+}
+
+.feature .btn-honey {
+  animation: nudge 1.6s steps(2, end) infinite;
+}
+
+@keyframes nudge {
+  50% {
+    translate: 0 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene .star,
+  .scene .bubble,
+  .scene .sprite.walking,
+  .feature .btn-honey {
+    animation: none;
   }
 }
