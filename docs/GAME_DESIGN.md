@@ -48,7 +48,7 @@ may wander.
 
 ## First version
 
-One office, one developer agent, one connected repository (`jiordiviera/noburi-playground`, private, with
+One office, one developer agent, one connected repository (`useburoo/noburi-playground`, private, with
 sample issues). The loop: issue on the board → agent takes it → branch → pull request after your approval → CI
 lights → you merge → done. A reviewer agent, XP and furniture come once this loop is fun.
 

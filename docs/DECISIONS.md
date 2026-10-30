@@ -243,7 +243,7 @@ The original pixel art is covered by Apache-2.0 for now; a separate asset licenc
   animations, walking paths and decoration may be staged, as long as they never show a state that is not true.
 - Tickets and deliverables come from GitHub through the user's `gh` login. Reading never asks, every write asks,
   merging stays with the player.
-- Test repository: `jiordiviera/noburi-playground` (private), with four sample issues.
+- Test repository: `useburoo/noburi-playground` (private), with four sample issues.
 
 ## D19: Game scene prototype
 
