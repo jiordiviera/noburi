@@ -121,52 +121,54 @@
         </div>
 
         <div class="scene" id="hero-scene">
-          <img
-            class="bg px"
-            src="../../assets/worlds/cozy-office/background.svg"
-            alt="The Noburi office at night: an issue board, the developer at a desk, your desk with the review tray"
-          />
-          <span class="star" style="left: 9.375%; top: 11.25%"></span>
-          <span class="star" style="left: 13.75%; top: 15%; animation-delay: 0.7s"></span>
-          <span class="star" style="left: 11.25%; top: 21.25%; animation-delay: 1.4s"></span>
-          <span class="star" style="left: 18.125%; top: 12.5%; animation-delay: 2.1s"></span>
-          <span class="star" style="left: 22.5%; top: 23.75%; animation-delay: 0.35s"></span>
-          <span class="star" style="left: 16.25%; top: 27.5%; animation-delay: 1.05s"></span>
-          <div class="board" aria-hidden="true">
-            <span class="card" data-card="1" style="background: #f2867a">#1</span>
-            <span class="card" data-card="2" style="background: #8ec5ff">#2</span>
-            <span class="card" data-card="3" style="background: #8ec5ff">#3</span>
-            <span class="card" data-card="4" style="background: #7dd3b0">#4</span>
+          <div class="stage">
+            <img
+              class="bg px"
+              src="../../assets/worlds/cozy-office/background.svg"
+              alt="The Noburi office at night: an issue board, the developer at a desk, your desk with the review tray"
+            />
+            <span class="star" style="left: 9.375%; top: 11.25%"></span>
+            <span class="star" style="left: 13.75%; top: 15%; animation-delay: 0.7s"></span>
+            <span class="star" style="left: 11.25%; top: 21.25%; animation-delay: 1.4s"></span>
+            <span class="star" style="left: 18.125%; top: 12.5%; animation-delay: 2.1s"></span>
+            <span class="star" style="left: 22.5%; top: 23.75%; animation-delay: 0.35s"></span>
+            <span class="star" style="left: 16.25%; top: 27.5%; animation-delay: 1.05s"></span>
+            <div class="board" aria-hidden="true">
+              <span class="card" data-card="1" style="background: #f2867a">#1</span>
+              <span class="card" data-card="2" style="background: #8ec5ff">#2</span>
+              <span class="card" data-card="3" style="background: #8ec5ff">#3</span>
+              <span class="card" data-card="4" style="background: #7dd3b0">#4</span>
+            </div>
+            <img
+              id="hero-dev"
+              class="sprite px"
+              src="../../assets/avatars/official/developer/idle.svg"
+              alt=""
+              style="left: 19.375%; top: 57.5%"
+            />
+            <span id="hero-carry" class="carry" hidden></span>
+            <img
+              id="hero-bubble"
+              class="bubble px"
+              src="../../assets/worlds/cozy-office/objects/bubble-approval.svg"
+              alt=""
+              hidden
+            />
+            <span id="hero-tool" class="tool" hidden></span>
+            <img
+              class="desk px"
+              src="../../assets/worlds/cozy-office/objects/desk.svg"
+              alt=""
+              style="left: 16.25%; top: 60%"
+            />
+            <img
+              class="desk px"
+              src="../../assets/worlds/cozy-office/objects/desk.svg"
+              alt=""
+              style="left: 72.5%; top: 60%"
+            />
+            <span class="tray" aria-hidden="true"><span id="hero-count" hidden>0</span></span>
           </div>
-          <img
-            id="hero-dev"
-            class="sprite px"
-            src="../../assets/avatars/official/developer/idle.svg"
-            alt=""
-            style="left: 19.375%; top: 57.5%"
-          />
-          <span id="hero-carry" class="carry" hidden></span>
-          <img
-            id="hero-bubble"
-            class="bubble px"
-            src="../../assets/worlds/cozy-office/objects/bubble-approval.svg"
-            alt=""
-            hidden
-          />
-          <span id="hero-tool" class="tool" hidden></span>
-          <img
-            class="desk px"
-            src="../../assets/worlds/cozy-office/objects/desk.svg"
-            alt=""
-            style="left: 16.25%; top: 60%"
-          />
-          <img
-            class="desk px"
-            src="../../assets/worlds/cozy-office/objects/desk.svg"
-            alt=""
-            style="left: 72.5%; top: 60%"
-          />
-          <span class="tray" aria-hidden="true"><span id="hero-count" hidden>0</span></span>
           <div id="hero-dialog" class="dialog win-honey" aria-live="polite">
             <img class="px" src="../../assets/avatars/official/developer/waiting.svg" alt="" />
             <div class="who">

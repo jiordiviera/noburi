@@ -313,7 +313,17 @@ h3 {
     0 24px 0 12px rgb(0 0 0 / 0.35);
 }
 
-.scene > img.bg {
+/* Everything positioned in % lives in the stage, which keeps the 2:1 office ratio even when the
+   dialog box moves below it on a phone. */
+.scene .stage {
+  position: relative;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.scene .stage > img.bg {
   display: block;
   width: 100%;
   aspect-ratio: 2 / 1;
